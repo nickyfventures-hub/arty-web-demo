@@ -18,6 +18,12 @@ import {
   type ReactNode,
 } from "react";
 import { buildSnapshot, type ListItem, type Snapshot } from "./fixtures";
+import {
+  defaultArtyProfile,
+  type ArtyAccent,
+  type ArtyCharacterFamily,
+  type HouseholdArtyProfile,
+} from "./character";
 import type { CharacterState, FollowUp } from "./intent";
 
 export type OnboardingStep =
@@ -27,6 +33,8 @@ export type OnboardingStep =
   | "household"
   | "connect"
   | "magic"
+  | "character"
+  | "montage"
   | "auth"
   | "invite"
   | "notifications";
@@ -62,6 +70,12 @@ export interface State {
   isEditingHousehold: boolean;
   /** Whether this deployment has a model behind it. */
   aiAvailable: boolean;
+  /**
+   * Which Arty this household chose, and its accent. Belongs to the
+   * household, never to one adult: one home, one Arty. Changing it changes
+   * appearance and nothing else.
+   */
+  artyProfile: HouseholdArtyProfile;
   calendarConnected: boolean;
   emailConnected: boolean;
   notificationAppetite: string;
@@ -94,6 +108,7 @@ export type Action =
   | { type: "removeMember"; id: string }
   | { type: "addMember"; name: string; role: "adult" | "child" }
   | { type: "setAIAvailable"; available: boolean }
+  | { type: "setArtyProfile"; family: ArtyCharacterFamily; accent: ArtyAccent }
   | { type: "connectCalendar" }
   | { type: "connectEmail" }
   | { type: "setAppetite"; id: string }
@@ -119,6 +134,8 @@ export const STEP_ORDER: OnboardingStep[] = [
   "household",
   "connect",
   "magic",
+  "character",
+  "montage",
   "auth",
   "invite",
   "notifications",
@@ -134,6 +151,7 @@ export function initialState(now = new Date()): State {
     householdStage: "who",
     isEditingHousehold: false,
     aiAvailable: false,
+    artyProfile: defaultArtyProfile(now),
     calendarConnected: false,
     emailConnected: false,
     notificationAppetite: "balanced",
@@ -278,6 +296,19 @@ function reducer(state: State, action: Action): State {
 
     case "setAIAvailable":
       return { ...state, aiAvailable: action.available };
+    case "setArtyProfile":
+      // Appearance only. Household memory, reminders, lists and everything
+      // else in this state are deliberately untouched: Arty's appearance
+      // changes, Arty's knowledge does not.
+      return {
+        ...state,
+        artyProfile: {
+          ...state.artyProfile,
+          family: action.family,
+          accent: action.accent,
+          updatedAt: state.now.toISOString(),
+        },
+      };
     case "connectCalendar":
       return { ...state, calendarConnected: true };
     case "connectEmail":
@@ -341,7 +372,7 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-const StoreContext = createContext<{ state: State; dispatch: Dispatch<Action> } | null>(null);
+export const StoreContext = createContext<{ state: State; dispatch: Dispatch<Action> } | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   // /demo opens the populated household; / opens the full journey from the

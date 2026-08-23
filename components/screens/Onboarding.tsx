@@ -26,6 +26,8 @@ import { isAIAvailable } from "@/lib/ai";
 import { STEP_ORDER, useStore } from "@/lib/store";
 import { useVoice } from "@/lib/useVoice";
 import Capabilities from "./CapabilitiesStep";
+import CharacterStep from "./CharacterStep";
+import MontageStep from "./MontageStep";
 import HouseholdConversation from "./HouseholdStep";
 
 export default function Onboarding() {
@@ -72,6 +74,8 @@ export default function Onboarding() {
           {state.step === "household" && <HouseholdConversation onNext={advance} />}
           {state.step === "connect" && <Connect onNext={advance} />}
           {state.step === "magic" && <MagicMoment onNext={advance} />}
+          {state.step === "character" && <CharacterStep onNext={advance} />}
+          {state.step === "montage" && <MontageStep onNext={advance} />}
           {state.step === "auth" && <Auth onNext={advance} />}
           {state.step === "invite" && <Invite onNext={advance} />}
           {state.step === "notifications" && <Notifications onNext={advance} />}

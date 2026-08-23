@@ -114,17 +114,19 @@ The whole journey, in order:
 6. Here's what I've got — the structured summary, with every name editable
 7. Connect your life — calendar, email, family
 8. The magic moment — four steps, then what Arty found
-9. Save your household
-10. Invite family
-11. How much should I bother you?
-12. Plan → Today
-13. Plan → Tomorrow
-14. Plan → This week
-15. Calendar, filtered by person
-16. Arty — talking and typing
-17. Shopping
-18. Settings, household, subscription, delete account
-19. Child mode preview
+9. What should your Arty look like? — four families, one character
+10. The capability montage — five sentences, performed by the chosen Arty
+11. Save your household
+12. Invite family
+13. How much should I bother you?
+14. Plan → Today
+15. Plan → Tomorrow
+16. Plan → This week
+17. Calendar, filtered by person
+18. Arty — talking and typing
+19. Shopping
+20. Settings, household, subscription, delete account
+21. Child mode preview
 
 Every step after the cover has a **back button** and a progress indicator, and
 the household summary can be corrected: tap Edit, then tap anyone to fix a

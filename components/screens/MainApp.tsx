@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ArtyCharacter from "@/components/ArtyCharacter";
+import { CharacterPicker } from "./CharacterStep";
+import { track } from "@/lib/analytics";
 import {
   ArtySays,
   EmptyState,
@@ -696,7 +698,7 @@ function ShoppingSheet() {
 
 function SettingsSheet() {
   const { state, dispatch } = useStore();
-  const [page, setPage] = useState<"root" | "household" | "subscription" | "delete" | "briefing">("root");
+  const [page, setPage] = useState<"root" | "household" | "subscription" | "delete" | "briefing" | "arty">("root");
 
   if (page !== "root") {
     return (
@@ -708,6 +710,7 @@ function SettingsSheet() {
           <ChevronLeft size={18} /> Settings
         </button>
         {page === "household" && <HouseholdPage />}
+        {page === "arty" && <YourArtyPage />}
         {page === "subscription" && <SubscriptionPage />}
         {page === "delete" && <DeletePage />}
         {page === "briefing" && <BriefingPage />}
@@ -720,6 +723,11 @@ function SettingsSheet() {
       <h2 className="pb-4 text-[17px] font-semibold text-ink">Settings</h2>
       <SettingsGroup>
         <SettingsRow label="Household" onClick={() => setPage("household")} />
+        <SettingsRow
+          label={copy.character.settingsTitle}
+          value={copy.character.options.find((option) => option.id === state.artyProfile.family)?.label}
+          onClick={() => setPage("arty")}
+        />
         <SettingsRow
           label="Child mode"
           onClick={() => dispatch({ type: "setOverlay", overlay: "child" })}
@@ -769,6 +777,46 @@ function SettingsSheet() {
       <p className="pt-6 text-[13px] text-ink-secondary">
         This is a UI prototype. Nothing here is stored or sent anywhere, and no real account exists.
       </p>
+    </div>
+  );
+}
+
+/**
+ * Your Arty — see the household's character, change it from the same curated
+ * picker onboarding used. Changing Arty changes appearance and nothing else:
+ * the reducer's setArtyProfile touches no other state, so memory, reminders,
+ * lists and subscription are untouchable from here by construction.
+ */
+function YourArtyPage() {
+  const { state, dispatch } = useStore();
+  const [picking, setPicking] = useState(false);
+  const current = copy.character.options.find((option) => option.id === state.artyProfile.family);
+
+  if (picking) {
+    return (
+      <div className="-mx-6 flex h-full flex-col">
+        <CharacterPicker
+          stage="settings"
+          onChosen={(family, accent) => {
+            dispatch({ type: "setArtyProfile", family, accent });
+            track("arty_character_changed", { character_family: family, accent, onboarding_stage: "settings" });
+            setPicking(false);
+          }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <h3 className="text-[22px] font-semibold text-ink">{copy.character.settingsTitle}</h3>
+      <div className="flex flex-col items-center gap-3">
+        <ArtyCharacter state="idle" size={170} />
+        <p className="text-[17px] font-semibold text-ink">{current?.label}</p>
+        <p className="max-w-[280px] text-center text-[15px] text-ink-secondary">{current?.subtext}</p>
+      </div>
+      <SecondaryButton onClick={() => setPicking(true)}>{copy.character.settingsChange}</SecondaryButton>
+      <p className="text-center text-[13px] text-ink-secondary">{copy.character.settingsNote}</p>
     </div>
   );
 }

@@ -98,6 +98,73 @@
     "emptyProduction": "I haven't found anything yet. Once there's something in your calendar I'll start joining the dots.",
     "continue": "Continue"
   },
+  "character": {
+    "lead": "One last thing. What should your Arty look like?",
+    "support": "Every household's Arty can be a little different. Pick the one that feels like yours.",
+    "options": [
+      {
+        "id": "companion",
+        "label": "Companion",
+        "subtext": "Warm, loyal and always keeping an eye on things."
+      },
+      {
+        "id": "concierge",
+        "label": "Concierge",
+        "subtext": "Calm, capable and quietly organised."
+      },
+      {
+        "id": "visitor",
+        "label": "Visitor",
+        "subtext": "Curious, clever and always paying attention."
+      },
+      {
+        "id": "essence",
+        "label": "Essence",
+        "subtext": "Simple, quiet and always there when you need it."
+      }
+    ],
+    "choose": "Choose this Arty",
+    "sayHello": "Say hello",
+    "helloLine": "Morning. I'll keep an eye on things.",
+    "accentTitle": "Pick an accent",
+    "meetTitle": "Meet your Arty.",
+    "meetBody": "The more your household tells Arty, the more useful he becomes.",
+    "settingsTitle": "Your Arty",
+    "settingsChange": "Change Arty",
+    "settingsNote": "Changing how Arty looks doesn't change anything he knows."
+  },
+  "montage": {
+    "lines": [
+      {
+        "say": "Mum's birthday is 14 September.",
+        "show": "Remembered every year.",
+        "icon": "gift"
+      },
+      {
+        "say": "We're nearly out of nappies.",
+        "show": "Added.",
+        "icon": "cart"
+      },
+      {
+        "say": "Sunny has swimming every Saturday at 10.",
+        "show": "Every Saturday. Got it.",
+        "icon": "calendar"
+      },
+      {
+        "say": "Katie doesn't eat mushrooms.",
+        "show": "Remembered.",
+        "icon": "meal"
+      },
+      {
+        "say": "Our insurance renews in October.",
+        "show": "I'll keep an eye on it.",
+        "icon": "envelope"
+      }
+    ],
+    "headline": "Tell Arty once.",
+    "subheading": "Arty remembers the things your family shouldn't have to.",
+    "continue": "Continue"
+  },
   "auth": {
     "question": "Want me to remember all this?",
     "body": "Save your household and keep Arty in sync across your devices.",
