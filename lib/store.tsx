@@ -8,6 +8,7 @@
  * and understand the product without anyone explaining it.
  */
 
+import { usePathname } from "next/navigation";
 import {
   createContext,
   useContext,
@@ -46,6 +47,12 @@ export interface Turn {
 export interface State {
   /** Null once onboarding is finished. */
   step: OnboardingStep | null;
+  /**
+   * True when the app was opened at /demo: the household is already there and
+   * onboarding never ran. Kept in state so "start over" returns to the demo
+   * rather than dropping someone into an empty onboarding they did not ask for.
+   */
+  isDemo: boolean;
   ownerName: string;
   extractedMembers: { id: string; name: string; role: "owner" | "adult" | "child" }[];
   extractedFacts: { name: string; lines: string[] }[];
@@ -120,6 +127,7 @@ export const STEP_ORDER: OnboardingStep[] = [
 export function initialState(now = new Date()): State {
   return {
     step: "welcome",
+    isDemo: false,
     ownerName: "",
     extractedMembers: [],
     extractedFacts: [],
@@ -144,6 +152,50 @@ export function initialState(now = new Date()): State {
   };
 }
 
+/**
+ * The app as it looks once a family has already told Arty about themselves.
+ *
+ * Onboarding is the right first experience for somebody deciding whether they
+ * want this. It is the wrong one for somebody being shown it: three minutes of
+ * typing before the product appears. /demo starts where a household would be
+ * after a fortnight — the people, the week, the shopping list, and the things
+ * Arty has noticed.
+ *
+ * The household is the same fixture data the native app uses, materialised
+ * against the clock, so the birthday is always coming up and swimming is
+ * always this Saturday. Nothing here is anybody's real information.
+ */
+export function demoState(now = new Date()): State {
+  const base = initialState(now);
+  const { members } = base.snapshot.household;
+  const owner = members.find((member) => member.role === "owner");
+
+  return {
+    ...base,
+    step: null,
+    isDemo: true,
+    ownerName: owner?.name ?? "Nicky",
+    extractedMembers: members.map((member) => ({
+      id: member.id,
+      name: member.name,
+      role: member.role,
+    })),
+    // What Arty would have understood from the onboarding conversation.
+    extractedFacts: members
+      .filter((member) => member.descriptor)
+      .map((member) => ({ name: member.name, lines: [member.descriptor] })),
+    // Both connections made. The calendar is simulated on the web and the app
+    // says so wherever it matters; email is labelled a demo connection.
+    calendarConnected: true,
+    emailConnected: true,
+    // Deliberately NOT pre-accepted. The watch list is one of the best things
+    // in the product, and it is only interesting if it is still actionable.
+    acceptedInsightIds: [],
+    tab: "plan",
+    segment: "today",
+  };
+}
+
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "goTo":
@@ -151,7 +203,7 @@ function reducer(state: State, action: Action): State {
     case "finishOnboarding":
       return { ...state, step: null, tab: "plan", segment: "today", characterState: "idle" };
     case "restart":
-      return initialState(state.now);
+      return state.isDemo ? demoState(state.now) : initialState(state.now);
     case "setName":
       return { ...state, ownerName: action.name };
     case "setExtraction":
@@ -292,7 +344,12 @@ function reducer(state: State, action: Action): State {
 const StoreContext = createContext<{ state: State; dispatch: Dispatch<Action> } | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, undefined, () => initialState());
+  // /demo opens the populated household; / opens the full journey from the
+  // cover. Read once, when the reducer initialises.
+  const pathname = usePathname();
+  const [state, dispatch] = useReducer(reducer, undefined, () =>
+    pathname === "/demo" ? demoState() : initialState(),
+  );
   const value = useMemo(() => ({ state, dispatch }), [state]);
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

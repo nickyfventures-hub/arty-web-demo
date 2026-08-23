@@ -172,6 +172,13 @@ function PlanScreen() {
             {greeting(state.ownerName || "there", state.now)}
           </h1>
           <p className="text-[15px] text-ink-secondary">{statusLine(day)}</p>
+          {/* Nobody should be able to mistake the Faircloughs for their own
+              family, or a simulated calendar for a connected one. */}
+          {state.isDemo && (
+            <p className="mt-1.5 inline-flex rounded-full bg-accent-muted px-2.5 py-1 text-[12px] font-medium text-accent">
+              Demo household · not real data
+            </p>
+          )}
         </div>
         <button
           onClick={() => dispatch({ type: "setOverlay", overlay: "settings" })}

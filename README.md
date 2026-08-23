@@ -83,6 +83,25 @@ finding.
 
 ---
 
+## Two ways in
+
+| Route | What it is | When to send it |
+| --- | --- | --- |
+| `/` | The whole journey from the cover | Somebody deciding whether they want this |
+| `/demo` | Arty with a household already in it | Somebody being shown it, who has thirty seconds |
+
+`/demo` starts where a family would be after a fortnight: the people, the week,
+the shopping list, and the things Arty has noticed. Onboarding is the right
+first experience for a parent and the wrong one for a demo — three minutes of
+typing before the product appears.
+
+It is the ordinary app, not a separate build. There are no demo-only screens
+and no second code path, so what gets shown is genuinely what gets built. The
+Plan screen carries a "Demo household · not real data" marker so nobody can
+mistake the Faircloughs for their own family.
+
+---
+
 ## What it covers
 
 The whole journey, in order:
