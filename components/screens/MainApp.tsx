@@ -47,6 +47,7 @@ import {
 import { buildDay, buildWeek, greeting, statusLine, weekInsights } from "@/lib/plan";
 import { respond } from "@/lib/intent";
 import { useStore } from "@/lib/store";
+import { useVoice } from "@/lib/useVoice";
 
 export default function MainApp() {
   const { state } = useStore();
@@ -442,8 +443,6 @@ function FilterChip({
 function AssistantScreen() {
   const { state, dispatch } = useStore();
   const [input, setInput] = useState(state.artyPrefill);
-  const [listening, setListening] = useState(false);
-  const [partial, setPartial] = useState("");
   const [followUp, setFollowUp] = useState<ReturnType<typeof respond>["followUp"]>(undefined);
   const scroller = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -501,35 +500,17 @@ function AssistantScreen() {
     [dispatch, state.now, state.snapshot],
   );
 
+  // A real microphone where the browser allows one, and the scripted example
+  // behind it where it does not. Either way the ears move on the tap.
+  const speech = useVoice(submit);
+
   const listen = () => {
-    if (listening) {
-      setListening(false);
-      dispatch({ type: "setMicLevel", level: 0 });
+    if (speech.listening) {
+      speech.stop();
       dispatch({ type: "setCharacter", state: "idle" });
       return;
     }
-    // The character reacts on the tap, not when the words arrive.
-    dispatch({ type: "setCharacter", state: "listening" });
-    setListening(true);
-
-    const utterance = "Add milk, nappies and dishwasher tablets";
-    const words = utterance.split(" ");
-    words.forEach((_, index) => {
-      timers.current.push(
-        setTimeout(() => {
-          dispatch({ type: "setMicLevel", level: 0.35 + ((index % 5) * 0.12) });
-          setPartial(words.slice(0, index + 1).join(" "));
-        }, index * 190),
-      );
-    });
-    timers.current.push(
-      setTimeout(() => {
-        setListening(false);
-        setPartial("");
-        dispatch({ type: "setMicLevel", level: 0 });
-        submit(utterance);
-      }, words.length * 190 + 320),
-    );
+    speech.start("Add milk, nappies and dishwasher tablets");
   };
 
   return (
@@ -537,7 +518,7 @@ function AssistantScreen() {
       <div ref={scroller} className="no-scrollbar flex-1 space-y-6 overflow-y-auto px-6">
         <div className="flex flex-col items-center gap-4">
           <ArtyCharacter state={state.characterState} level={state.micLevel} size={165} />
-          {listening ? (
+          {speech.listening ? (
             <>
               <Waveform level={state.micLevel} />
               <p className="text-[13px] font-medium text-accent">{copy.assistant.listening}</p>
@@ -545,7 +526,12 @@ function AssistantScreen() {
           ) : state.transcript.length === 0 ? (
             <p className="text-[22px] font-medium text-ink">{copy.assistant.prompt}</p>
           ) : null}
-          {partial && <p className="text-center text-[18px] text-ink-secondary">{partial}</p>}
+          {speech.partial && (
+            <p className="text-center text-[18px] text-ink-secondary">{speech.partial}</p>
+          )}
+          {speech.problem && (
+            <p className="text-center text-[13px] text-ink-secondary">{speech.problem}</p>
+          )}
         </div>
 
         {state.transcript.length === 0 ? (
@@ -618,10 +604,10 @@ function AssistantScreen() {
         />
         <button
           onClick={() => (input.trim() ? submit(input) : listen())}
-          aria-label={input.trim() ? "Send" : listening ? "Stop listening" : "Talk to Arty"}
+          aria-label={input.trim() ? "Send" : speech.listening ? "Stop listening" : "Talk to Arty"}
           className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-accent text-white"
         >
-          {input.trim() ? <Send size={19} /> : listening ? <Square size={19} /> : <Mic size={19} />}
+          {input.trim() ? <Send size={19} /> : speech.listening ? <Square size={19} /> : <Mic size={19} />}
         </button>
       </div>
     </div>

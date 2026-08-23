@@ -24,7 +24,7 @@ import {
 import { copy, fill } from "@/lib/fixtures";
 import { isAIAvailable } from "@/lib/ai";
 import { STEP_ORDER, useStore } from "@/lib/store";
-import { useSimulatedSpeech } from "@/lib/useSimulatedSpeech";
+import { useVoice } from "@/lib/useVoice";
 import Capabilities from "./CapabilitiesStep";
 import HouseholdConversation from "./HouseholdStep";
 
@@ -165,7 +165,7 @@ function Introduction({ onNext }: { onNext: () => void }) {
     [dispatch],
   );
 
-  const speech = useSimulatedSpeech(accept);
+  const speech = useVoice(accept);
 
   return (
     <div className="flex flex-1 flex-col px-6 pb-7 pt-6">
@@ -196,6 +196,9 @@ function Introduction({ onNext }: { onNext: () => void }) {
         </div>
         {speech.listening && <Waveform level={state.micLevel} />}
         {speech.partial && <p className="text-[18px] text-ink-secondary">{speech.partial}</p>}
+        {speech.problem && (
+          <p className="text-center text-[13px] text-ink-secondary">{speech.problem}</p>
+        )}
       </div>
 
       <div className="space-y-3">

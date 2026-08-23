@@ -34,7 +34,7 @@ import {
 import { copy, fill } from "@/lib/fixtures";
 import { extractDetails, extractMembers } from "@/lib/ai";
 import { useStore, type HouseholdStage } from "@/lib/store";
-import { useSimulatedSpeech } from "@/lib/useSimulatedSpeech";
+import { useVoice } from "@/lib/useVoice";
 import { MemberEditor } from "./MemberEditor";
 
 const TINTS = ["artyTeal", "artyPlum", "artyAmber", "artySage"];
@@ -87,7 +87,7 @@ export default function HouseholdConversation({ onNext }: { onNext: () => void }
     [dispatch, setStage, stage, state.aiAvailable, state.extractedMembers, state.ownerName],
   );
 
-  const speech = useSimulatedSpeech(submit);
+  const speech = useVoice(submit);
   const example = stage === "who" ? copy.household.whoExample : copy.household.detailExample;
   const editingMember = state.extractedMembers.find((member) => member.id === editingId) ?? null;
 
@@ -109,6 +109,9 @@ export default function HouseholdConversation({ onNext }: { onNext: () => void }
         )}
 
         {speech.listening && <Waveform level={state.micLevel} />}
+        {speech.problem && (
+          <p className="text-[13px] text-ink-secondary">{speech.problem}</p>
+        )}
         {speech.partial && <p className="text-[18px] text-ink-secondary">{speech.partial}</p>}
         {thinking && (
           <p className="flex items-center gap-1.5 text-[13px] font-medium text-ink-secondary">

@@ -34,8 +34,8 @@ export default function Privacy() {
           Arty helps a household remember and organise its own life. There is no advertising, no
           tracking, no analytics SDK, and household information is never sold or shared. On the
           iPhone, everything a family tells Arty stays on their own device. On this web prototype
-          one thing may leave your browser, and only one: see &quot;Understanding what you say&quot;
-          below.
+          two things may leave your browser: what you say to the microphone, and the sentence you
+          type during onboarding. Both are explained below, and neither goes to Arty.
         </p>
       </Section>
 
@@ -50,6 +50,31 @@ export default function Privacy() {
           type during onboarding is sent to Anthropic&apos;s Claude API to be turned into structured
           data, and then discarded. If no key is configured, nothing you type leaves your browser at
           all. The section below explains this in full.
+        </p>
+      </Section>
+
+      <Section title="Using the microphone">
+        <p>
+          If you press the microphone on this web prototype, two separate things happen. Your
+          browser measures how loud you are, which is what makes Arty react while you are still
+          speaking; that measurement never leaves your device. Separately, your browser turns your
+          speech into text.
+        </p>
+        <p>
+          <strong>That transcription is not done by Arty, and in most browsers it is not done on
+          your device.</strong> Chrome and Edge send the audio to Google&apos;s speech service.
+          Safari uses Apple&apos;s. It is their processing, under their terms, and Arty never
+          receives the audio. If your browser cannot transcribe at all, Arty falls back to a
+          scripted example and tells you it has done so.
+        </p>
+        <p>
+          This is the clearest example of why the iPhone app is the real product. On iOS, Arty
+          prefers on-device speech recognition, and on iOS 26 the sentence is also understood by a
+          model running on the phone. Nothing is sent anywhere.
+        </p>
+        <p>
+          Nothing is recorded or stored either way. The microphone runs only while you are holding
+          a conversation you started, and typing always works instead.
         </p>
       </Section>
 
