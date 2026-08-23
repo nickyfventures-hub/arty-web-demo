@@ -292,7 +292,7 @@ function Connect({ onNext }: { onNext: () => void }) {
           <p className="text-[15px] text-ink-secondary">{copy.connect.familySupport}</p>
           <SecondaryButton onClick={() => setInviteNote(true)}>{copy.connect.familyAction}</SecondaryButton>
           {inviteNote && (
-            <p className="text-[13px] text-ink-tertiary">
+            <p className="text-[13px] text-ink-secondary">
               I&apos;ll help you do that in a moment, once you&apos;ve seen what I&apos;ve found.
             </p>
           )}
@@ -340,7 +340,7 @@ function ConnectSection({
       ) : (
         <SecondaryButton onClick={onConnect}>{action}</SecondaryButton>
       )}
-      {note && <p className="text-[13px] text-ink-tertiary">{note}</p>}
+      {note && <p className="text-[13px] text-ink-secondary">{note}</p>}
     </Reveal>
   );
 }
@@ -430,7 +430,7 @@ function MagicMoment({ onNext }: { onNext: () => void }) {
                 <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full border border-hairline">
                   {index < completed && <Check size={13} className="text-accent" />}
                 </span>
-                <span className={index < completed ? "text-ink" : "text-ink-tertiary"}>{step}</span>
+                <span className={index < completed ? "text-ink" : "text-ink-secondary"}>{step}</span>
               </li>
             ))}
           </ol>
@@ -492,7 +492,7 @@ function Auth({ onNext }: { onNext: () => void }) {
            {copy.auth.action}
         </button>
         <SecondaryButton onClick={onNext}>{copy.auth.skip}</SecondaryButton>
-        <p className="text-center text-[13px] text-ink-tertiary">
+        <p className="text-center text-[13px] text-ink-secondary">
           On the iPhone this is the real Sign in with Apple sheet. In this web prototype it is a
           demonstration only, and nothing is sent anywhere.
         </p>
@@ -570,7 +570,7 @@ function Invite({ onNext }: { onNext: () => void }) {
           </PrimaryButton>
         )}
         <SecondaryButton onClick={onNext}>{copy.invite.secondary}</SecondaryButton>
-        <p className="text-center text-[13px] text-ink-tertiary">{copy.invite.supporting}</p>
+        <p className="text-center text-[13px] text-ink-secondary">{copy.invite.supporting}</p>
       </div>
     </div>
   );
@@ -617,7 +617,7 @@ function Notifications({ onNext }: { onNext: () => void }) {
 
       <div className="space-y-2 pt-4">
         <PrimaryButton onClick={onNext}>{copy.notifications.continue}</PrimaryButton>
-        <p className="text-center text-[13px] text-ink-tertiary">
+        <p className="text-center text-[13px] text-ink-secondary">
           Arty sends the morning briefing at 7:30. You can change this any time.
         </p>
       </div>

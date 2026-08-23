@@ -189,7 +189,7 @@ function PlanScreen() {
               key={segment}
               onClick={() => dispatch({ type: "setSegment", segment })}
               aria-pressed={state.segment === segment}
-              className={`flex-1 rounded-lg py-2 text-[14px] font-medium transition ${state.segment === segment ? "bg-white text-ink shadow-sm" : "text-ink-secondary"}`}
+              className={`min-h-[44px] flex-1 rounded-lg text-[14px] font-medium transition ${state.segment === segment ? "bg-white text-ink shadow-sm" : "text-ink-secondary"}`}
             >
               {copy.plan.segments[index]}
             </button>
@@ -294,7 +294,7 @@ function WeekList({ rows }: { rows: ReturnType<typeof buildWeek> }) {
               <span className="w-[86px] shrink-0 text-[15px] font-medium text-ink">{row.weekday}</span>
               <span className="flex-1">
                 {row.parts.length === 0 ? (
-                  <span className="text-[15px] text-ink-tertiary">{copy.plan.free}</span>
+                  <span className="text-[15px] text-ink-secondary">{copy.plan.free}</span>
                 ) : (
                   <span className="text-[15px] text-ink-secondary">{row.parts.join(" · ")}</span>
                 )}
@@ -652,7 +652,7 @@ function ShoppingSheet() {
                     </span>
                     <span className="flex-1">
                       <span
-                        className={`block text-[17px] ${item.checked ? "text-ink-tertiary line-through" : "text-ink"}`}
+                        className={`block text-[17px] ${item.checked ? "text-ink-secondary line-through" : "text-ink"}`}
                       >
                         {item.text}
                       </span>
@@ -773,7 +773,7 @@ function SettingsSheet() {
         </button>
       </SettingsGroup>
 
-      <p className="pt-6 text-[13px] text-ink-tertiary">
+      <p className="pt-6 text-[13px] text-ink-secondary">
         This is a UI prototype. Nothing here is stored or sent anywhere, and no real account exists.
       </p>
     </div>
@@ -888,7 +888,7 @@ function SubscriptionPage() {
       </div>
 
       <PrimaryButton disabled>Subscribe</PrimaryButton>
-      <p className="text-[13px] text-ink-tertiary">
+      <p className="text-[13px] text-ink-secondary">
         Purchasing happens on the iPhone through the App Store. On iOS the prices come from StoreKit
         rather than from this page.
       </p>
@@ -906,7 +906,7 @@ function SubscriptionPage() {
 
       <div className="space-y-2">
         <InlineButton disabled>{copy.subscription.restore}</InlineButton>
-        <p className="text-[13px] text-ink-tertiary">{copy.subscription.renewalNote}</p>
+        <p className="text-[13px] text-ink-secondary">{copy.subscription.renewalNote}</p>
       </div>
     </div>
   );
@@ -973,7 +973,7 @@ function BriefingPage() {
           <span className="block text-[13px] text-ink">{body}</span>
         </span>
       </div>
-      <p className="text-[13px] text-ink-tertiary">
+      <p className="text-[13px] text-ink-secondary">
         On the iPhone this arrives as a real notification at 7:30 and opens Plan → Today.
       </p>
     </div>
@@ -1035,7 +1035,7 @@ function ChildModeScreen() {
         ))}
       </div>
 
-      <p className="text-[13px] text-ink-tertiary">
+      <p className="text-[13px] text-ink-secondary">
         Child mode hides email, money, private notes and every setting. Arty answers questions about
         the day and can add to the shopping list.
       </p>

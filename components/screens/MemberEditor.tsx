@@ -83,7 +83,7 @@ export function MemberEditor({
           }}
           className="mt-1.5 w-full rounded-full bg-muted px-5 py-3.5 text-[17px] outline-none"
         />
-        <p className="mt-1.5 text-[13px] text-ink-tertiary">
+        <p className="mt-1.5 text-[13px] text-ink-secondary">
           Spelling matters here. Arty uses this name in reminders and briefings.
         </p>
 
@@ -96,7 +96,7 @@ export function MemberEditor({
                   key={option}
                   onClick={() => setRole(option)}
                   aria-pressed={role === option}
-                  className={`flex-1 rounded-lg py-2 text-[15px] font-medium transition ${
+                  className={`min-h-[44px] flex-1 rounded-lg text-[15px] font-medium transition ${
                     role === option ? "bg-white text-ink shadow-sm" : "text-ink-secondary"
                   }`}
                 >
@@ -104,7 +104,7 @@ export function MemberEditor({
                 </button>
               ))}
             </div>
-            <p className="mt-1.5 text-[13px] text-ink-tertiary">
+            <p className="mt-1.5 text-[13px] text-ink-secondary">
               Children get a simplified Arty that a parent controls. They never get their own account.
             </p>
           </div>

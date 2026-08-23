@@ -187,7 +187,7 @@ export function Row({
     <div className="flex w-full items-start gap-4 py-3 text-left">
       {time !== undefined && (
         <span
-          className={`w-[54px] shrink-0 pt-0.5 text-[15px] tabular-nums ${muted ? "text-ink-tertiary" : "font-semibold text-ink"}`}
+          className={`w-[54px] shrink-0 pt-0.5 text-[15px] tabular-nums ${muted ? "text-ink-secondary" : "font-semibold text-ink"}`}
         >
           {time}
         </span>

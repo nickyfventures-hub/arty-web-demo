@@ -70,7 +70,7 @@ export default function Capabilities({ onNext }: { onNext: () => void }) {
 
       <div className="space-y-2 pt-4">
         <PrimaryButton onClick={onNext}>{copy.capabilities.continue}</PrimaryButton>
-        <p className="text-center text-[13px] text-ink-tertiary">{copy.capabilities.footnote}</p>
+        <p className="text-center text-[13px] text-ink-secondary">{copy.capabilities.footnote}</p>
       </div>
     </div>
   );

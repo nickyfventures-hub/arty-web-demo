@@ -15,7 +15,13 @@ const config: Config = {
         hairline: "#E6DFD5",
         ink: "#1C1B19",
         "ink-secondary": "#6B675F",
-        "ink-tertiary": "#9A958B",
+        // Retired. A third ink level cannot reach 4.5:1 on this warm canvas
+        // without becoming ink-secondary, and everything it was carrying was
+        // small print that has to be readable — renewal terms, and the notes
+        // saying which parts of the prototype are simulated. Aliased rather
+        // than deleted so a stray `text-ink-tertiary` renders readable text
+        // instead of failing silently.
+        "ink-tertiary": "#6B675F",
         accent: "#1F6F6B",
         "accent-muted": "#E3F0EE",
         attention: "#9A5B27",
