@@ -2,9 +2,15 @@
 
 A UI prototype of Arty that you can send to a parent as a URL.
 
-**This is not the product.** The product is the native iOS app in `/Arty`. This
-exists for one reason: so families can be shown the journey and asked what they
-think, before TestFlight and signing are set up.
+**This is not the product.** The product is a native iOS app, kept in a private
+repository. This exists for one reason: so families can be shown the journey
+and asked what they think, before TestFlight and signing are set up.
+
+> **If you are reading this in `nickyfventures-hub/arty-web-demo`, this is a
+> mirror.** It is published from the `web-demo/` directory of the private Arty
+> repository with `git subtree push`, so that Railway can build it without
+> being given access to the iOS source. Do not commit here — changes belong
+> upstream, or the next publish will overwrite them.
 
 ---
 
