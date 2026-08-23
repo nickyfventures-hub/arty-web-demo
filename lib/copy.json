@@ -1,0 +1,262 @@
+{
+  "version": 1,
+  "note": "Single source of truth for user-facing copy shared by the native iOS app and the web demo. Arty's voice: a competent personal assistant — calm, warm, understated, subtly British. Never exclamatory, never a motivational coach, never a pet.",
+  "brand": {
+    "name": "Arty",
+    "tagline": "Your family's personal assistant. In your pocket.",
+    "promise": "Tell Arty. Arty remembers.",
+    "architecture": "One home. One Arty."
+  },
+  "welcome": {
+    "headline": "Arty",
+    "subheading": "Your family's personal assistant. In your pocket.",
+    "body": "I keep track of the plans, the dates and the admin your family shouldn't have to hold in their heads.",
+    "primary": "Meet Arty",
+    "secondary": "Join a household"
+  },
+  "capabilities": {
+    "title": "What I do",
+    "lead": "Here's what I'll take off your hands.",
+    "support": "There's nothing to set up. You tell me things, and I do the rest.",
+    "items": [
+      {
+        "id": "plan",
+        "title": "Run the day",
+        "body": "Today, tomorrow and the week ahead. One plan, with everyone in it."
+      },
+      {
+        "id": "remember",
+        "title": "Remember the small things",
+        "body": "Birthdays, nursery days, the PE kit, the thing somebody mentioned in passing."
+      },
+      {
+        "id": "admin",
+        "title": "Keep an eye on the admin",
+        "body": "Renewals, bookings and deadlines, noticed before they turn into a problem."
+      },
+      {
+        "id": "ask",
+        "title": "Answer when you ask",
+        "body": "Say it or type it. Check the week, add a reminder, put something on the shopping list."
+      },
+      {
+        "id": "everyone",
+        "title": "Work for everyone at home",
+        "body": "One assistant for the whole household, with a safe version for the children."
+      }
+    ],
+    "footnote": "One subscription covers your household.",
+    "continue": "Sounds useful"
+  },
+  "introduction": {
+    "greeting": "Hi. I'm Arty.",
+    "purpose": "I'm the assistant for your whole household. Tell me something once and everyone has it.",
+    "askName": "First things first. What should I call you?",
+    "voiceAction": "Talk to Arty",
+    "typeAction": "Type instead",
+    "namePlaceholder": "Your name",
+    "acknowledgement": "Nice to meet you, {name}."
+  },
+  "household": {
+    "whoPrompt": "Who do you live with?",
+    "whoSupporting": "Just tell me naturally.",
+    "whoExample": "I live with my partner Katie and our two girls, Sunny and Posy.",
+    "gotIt": "Got it. {count} of you.",
+    "detailPrompt": "Tell me anything else that's useful. Ages, nursery days, work routines, pets. Whatever comes to mind.",
+    "detailExample": "Sunny is two and goes to nursery Tuesday and Thursday. Posy is a baby. Katie works three days. No pets.",
+    "summaryTitle": "Here's what I've got",
+    "confirm": "Looks right",
+    "edit": "Edit"
+  },
+  "connect": {
+    "lead": "You shouldn't have to tell me everything.",
+    "support": "Let me learn from the places your household life already happens.",
+    "calendarTitle": "Calendar",
+    "calendarBody": "Understand appointments, work, school, birthdays and plans.",
+    "calendarAction": "Connect calendar",
+    "calendarConnected": "Connected",
+    "emailTitle": "Email",
+    "emailBody": "Spot important household admin such as bookings and renewals.",
+    "emailAction": "Connect email",
+    "emailDemoConnected": "Demo connection",
+    "emailHonesty": "This prototype simulates email. Arty is not reading a real inbox.",
+    "familyTitle": "Family",
+    "familyBody": "I work for everyone at home, not just the person who set me up.",
+    "familySupport": "One subscription covers your household.",
+    "familyAction": "Invite family",
+    "continue": "Continue"
+  },
+  "magic": {
+    "waiting": "Give me a moment. I'm getting to know your household.",
+    "steps": [
+      "Looking through your plans",
+      "Finding important dates",
+      "Spotting things worth remembering",
+      "Learning your routines"
+    ],
+    "turn": "Right. I've already found a few things.",
+    "emptyProduction": "I haven't found anything yet. Once there's something in your calendar I'll start joining the dots.",
+    "continue": "Continue"
+  },
+  "auth": {
+    "question": "Want me to remember all this?",
+    "body": "Save your household and keep Arty in sync across your devices.",
+    "action": "Sign in with Apple",
+    "skip": "Not now",
+    "cancelled": "No problem. You can save your household whenever you're ready."
+  },
+  "invite": {
+    "lead": "There's one thing missing. I only know your half of the story.",
+    "body": "Invite the people you live with and I'll keep everyone in sync.",
+    "primary": "Invite {name}",
+    "secondary": "Do this later",
+    "supporting": "One subscription covers your household.",
+    "you": "You",
+    "inviteAction": "Invite",
+    "childLabel": "Child",
+    "sent": "Invitation ready for {name}.",
+    "linkNote": "Share this link. It expires in 7 days."
+  },
+  "notifications": {
+    "title": "How much should I bother you?",
+    "options": [
+      {
+        "id": "essential",
+        "title": "Only important things",
+        "body": "Only tell me when I really need to know.",
+        "recommended": false
+      },
+      {
+        "id": "balanced",
+        "title": "Keep me organised",
+        "body": "A sensible amount of help.",
+        "recommended": true
+      },
+      {
+        "id": "everything",
+        "title": "Stay on top of everything",
+        "body": "Help me stay ahead of everything happening.",
+        "recommended": false
+      }
+    ],
+    "continue": "Continue",
+    "deniedTitle": "Notifications are off",
+    "deniedBody": "Arty can still keep everything in Plan. Turn notifications on in Settings if you would like the morning briefing."
+  },
+  "plan": {
+    "greetingMorning": "Morning, {name}.",
+    "greetingAfternoon": "Afternoon, {name}.",
+    "greetingEvening": "Evening, {name}.",
+    "statusCalm": "Everything looks under control.",
+    "statusOne": "I've got one thing for you today.",
+    "statusMany": "I've got {count} things for you today.",
+    "segments": [
+      "Today",
+      "Tomorrow",
+      "This week"
+    ],
+    "watchingTitle": "Arty's got an eye on",
+    "tomorrowRelaxed": "Tomorrow looks pretty relaxed.",
+    "tomorrowBusy": "Tomorrow has a bit in it.",
+    "free": "Free",
+    "looksFree": "Looks free"
+  },
+  "assistant": {
+    "prompt": "What can I help with?",
+    "typePlaceholder": "Type instead…",
+    "listening": "Listening",
+    "thinking": "Thinking",
+    "suggestions": [
+      "What's happening tomorrow?",
+      "Add something to shopping",
+      "Don't let me forget something",
+      "What should I know this week?"
+    ],
+    "unknown": "I didn't quite catch what you'd like me to do with that. Try telling me about a plan, something to remember, or something to add to the shopping.",
+    "micDeniedTitle": "I can't hear you yet",
+    "micDeniedBody": "Microphone access is off. You can still type to me. To talk, turn on Microphone for Arty in Settings.",
+    "speechUnavailable": "Live transcription isn't available on this device right now. Typing works exactly the same."
+  },
+  "shopping": {
+    "title": "Shopping",
+    "addPlaceholder": "Add an item",
+    "emptyTitle": "Nothing on the list.",
+    "emptyBody": "Tell Arty when you're running low on something.",
+    "addedBy": "Added by {name}"
+  },
+  "calendar": {
+    "title": "Household Calendar",
+    "emptyTitle": "Nothing in the calendar yet.",
+    "emptyBody": "Tell Arty what you've got planned.",
+    "deniedTitle": "Calendar isn't connected",
+    "deniedBody": "Arty can't see your plans yet. You can still tell him things and he'll keep them here.",
+    "deniedAction": "Open Settings",
+    "addEvent": "Add event",
+    "allFilter": "All"
+  },
+  "subscription": {
+    "title": "Arty Household",
+    "subtitle": "One subscription for your home.",
+    "benefits": [
+      "Everyone in your household",
+      "One shared memory",
+      "Planning across the week",
+      "Reminders that arrive at the right time",
+      "Connected calendar and email insights",
+      "Arty's voice assistant"
+    ],
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "restore": "Restore Purchases",
+    "manage": "Manage Subscription",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "renewalNote": "Subscriptions renew automatically until cancelled. Cancel any time in your Apple account settings.",
+    "activeTitle": "Arty Household is active",
+    "unavailable": "The App Store isn't reachable right now. Your household keeps working, so try again in a moment."
+  },
+  "settings": {
+    "householdTitle": "The {surname} Household",
+    "knowsTitle": "What Arty knows",
+    "inviteSomeone": "Invite someone",
+    "deleteAccount": "Delete my account",
+    "signOut": "Sign out",
+    "deleteTitle": "Delete my account",
+    "deleteExplain": "This removes your household, everything Arty has learned, your reminders, lists and connected service settings from this device and from Arty's records.",
+    "deleteSubscriptionNote": "Deleting your Arty account does not cancel your Apple subscription. Cancel it separately in your Apple account settings.",
+    "deleteConfirm": "Delete everything",
+    "deleteCancel": "Keep my account",
+    "deleteTypeToConfirm": "Type DELETE to confirm"
+  },
+  "childMode": {
+    "title": "Child mode",
+    "greeting": "Hello. What would you like to know?",
+    "suggestions": [
+      "What are we doing tomorrow?",
+      "When is swimming?",
+      "What's for dinner?",
+      "Add strawberries to shopping",
+      "Remind Dad I need my PE kit"
+    ],
+    "blocked": "That's something for a grown-up to look after.",
+    "exit": "Exit child mode"
+  },
+  "empty": {
+    "calendarTitle": "Nothing in the calendar yet.",
+    "calendarBody": "Tell Arty what you've got planned.",
+    "shoppingTitle": "Nothing on the list.",
+    "shoppingBody": "Tell Arty when you're running low on something.",
+    "todayTitle": "Everything looks under control.",
+    "productionNoData": "I don't know anything about your household yet. Tell me something and I'll remember it."
+  },
+  "errors": {
+    "calendarDenied": "Arty can't see your calendar. You can still tell him your plans.",
+    "micDenied": "Microphone access is off. Typing works exactly the same.",
+    "speechUnavailable": "Live transcription isn't available right now. Typing works exactly the same.",
+    "notificationsDenied": "Notifications are off, so I'll keep everything in Plan instead.",
+    "storeUnavailable": "The App Store isn't reachable right now.",
+    "signInCancelled": "No problem. You can save your household whenever you're ready.",
+    "inviteInvalid": "That invitation has expired or already been used. Ask whoever sent it for a new one.",
+    "offline": "You're offline. Everything Arty already knows is still here."
+  }
+}

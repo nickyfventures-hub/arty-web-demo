@@ -1,0 +1,340 @@
+{
+  "version": 1,
+  "note": "Shared demo household used by both the native iOS prototype and the web demo. Dates are expressed as schedules relative to the day the demo is opened, so the prototype never goes stale. anchorDate is the date the scripted product narrative was written against (Saturday 22 August 2026) and is used by the frozen-clock demo control.",
+  "anchorDate": "2026-08-22",
+  "household": {
+    "id": "household-demo",
+    "name": "The Fairclough Household",
+    "surname": "Fairclough",
+    "members": [
+      { "id": "nicky", "name": "Nicky", "role": "owner", "descriptor": "Adult", "colorToken": "artyTeal" },
+      { "id": "katie", "name": "Katie", "role": "adult", "descriptor": "Works 3 days", "colorToken": "artyPlum" },
+      { "id": "sunny", "name": "Sunny", "role": "child", "descriptor": "Age 2", "colorToken": "artyAmber", "ageYears": 2 },
+      { "id": "posy", "name": "Posy", "role": "child", "descriptor": "Baby", "colorToken": "artySage", "ageYears": 0 }
+    ]
+  },
+  "preferences": [
+    { "id": "pref-zoo", "subject": "sunny", "text": "Sunny loved Chester Zoo", "category": "placesEnjoyed", "confidence": "stated" },
+    { "id": "pref-nopets", "subject": "household", "text": "No pets", "category": "householdFact", "confidence": "stated" },
+    { "id": "pref-katie-work", "subject": "katie", "text": "Katie works three days a week", "category": "routine", "confidence": "stated" },
+    { "id": "pref-nursery", "subject": "sunny", "text": "Nursery on Tuesday and Thursday", "category": "routine", "confidence": "stated" },
+    { "id": "pref-pasta", "subject": "household", "text": "Everyone will eat chicken pesto pasta", "category": "meals", "confidence": "inferred" }
+  ],
+  "memories": [
+    { "id": "mem-passport", "text": "Nicky's passport expires next March", "category": "importantDocument", "createdOffsetDays": -12 },
+    { "id": "mem-zoo", "text": "Sunny loved Chester Zoo", "category": "placesEnjoyed", "createdOffsetDays": -30 },
+    { "id": "mem-pe", "text": "PE kit needed on Tuesdays", "category": "routine", "createdOffsetDays": -6 }
+  ],
+  "events": [
+    {
+      "id": "evt-swimming",
+      "title": "Sunny's swimming",
+      "memberId": "sunny",
+      "kind": "activity",
+      "schedule": { "kind": "weekly", "weekday": "saturday" },
+      "startTime": "10:00",
+      "durationMinutes": 45,
+      "location": "Kingsway Leisure Centre",
+      "leaveAt": "09:25",
+      "bring": ["Swimming bag"],
+      "notes": "Part of the weekend routine."
+    },
+    {
+      "id": "evt-nursery-tue",
+      "title": "Nursery",
+      "memberId": "sunny",
+      "kind": "nursery",
+      "schedule": { "kind": "weekly", "weekday": "tuesday" },
+      "startTime": "08:45",
+      "durationMinutes": 480,
+      "location": "Little Acorns",
+      "leaveAt": "08:30",
+      "bring": [],
+      "notes": ""
+    },
+    {
+      "id": "evt-nursery-thu",
+      "title": "Nursery",
+      "memberId": "sunny",
+      "kind": "nursery",
+      "schedule": { "kind": "weekly", "weekday": "thursday" },
+      "startTime": "08:45",
+      "durationMinutes": 480,
+      "location": "Little Acorns",
+      "leaveAt": "08:30",
+      "bring": [],
+      "notes": ""
+    },
+    {
+      "id": "evt-work-mon",
+      "title": "Work",
+      "memberId": "katie",
+      "kind": "work",
+      "schedule": { "kind": "weekly", "weekday": "monday" },
+      "startTime": "09:00",
+      "durationMinutes": 480,
+      "location": "",
+      "bring": [],
+      "notes": ""
+    },
+    {
+      "id": "evt-work-tue",
+      "title": "Work",
+      "memberId": "katie",
+      "kind": "work",
+      "schedule": { "kind": "weekly", "weekday": "tuesday" },
+      "startTime": "09:00",
+      "durationMinutes": 480,
+      "location": "",
+      "bring": [],
+      "notes": ""
+    },
+    {
+      "id": "evt-work-thu",
+      "title": "Work",
+      "memberId": "katie",
+      "kind": "work",
+      "schedule": { "kind": "weekly", "weekday": "thursday" },
+      "startTime": "09:00",
+      "durationMinutes": 480,
+      "location": "",
+      "bring": [],
+      "notes": ""
+    },
+    {
+      "id": "evt-pe-kit",
+      "title": "PE kit",
+      "memberId": "sunny",
+      "kind": "reminderItem",
+      "schedule": { "kind": "weekly", "weekday": "tuesday" },
+      "startTime": "08:00",
+      "durationMinutes": 0,
+      "location": "",
+      "bring": ["PE kit"],
+      "notes": "Goes in the bag the night before."
+    },
+    {
+      "id": "evt-dentist",
+      "title": "Dentist",
+      "memberId": "nicky",
+      "kind": "appointment",
+      "schedule": { "kind": "weekly", "weekday": "wednesday" },
+      "startTime": "14:30",
+      "durationMinutes": 30,
+      "location": "Bridge Street Dental",
+      "leaveAt": "14:10",
+      "bring": [],
+      "notes": ""
+    },
+    {
+      "id": "evt-lunch-mums",
+      "title": "Lunch at Mum's",
+      "memberId": "nicky",
+      "kind": "familyPlan",
+      "schedule": { "kind": "weekly", "weekday": "sunday" },
+      "startTime": "12:30",
+      "durationMinutes": 120,
+      "location": "Mum's",
+      "leaveAt": "12:00",
+      "bring": [],
+      "notes": ""
+    },
+    {
+      "id": "evt-katie-birthday",
+      "title": "Katie's birthday",
+      "memberId": "katie",
+      "kind": "birthday",
+      "schedule": { "kind": "annual", "month": 9, "day": 14 },
+      "startTime": "00:00",
+      "durationMinutes": 0,
+      "allDay": true,
+      "location": "",
+      "bring": [],
+      "notes": ""
+    },
+    {
+      "id": "evt-insurance",
+      "title": "Car insurance renews",
+      "memberId": "nicky",
+      "kind": "renewal",
+      "schedule": { "kind": "annual", "month": 10, "day": 14 },
+      "startTime": "00:00",
+      "durationMinutes": 0,
+      "allDay": true,
+      "location": "",
+      "bring": [],
+      "notes": "Spotted in email."
+    },
+    {
+      "id": "evt-delivery",
+      "title": "Tesco delivery",
+      "memberId": "nicky",
+      "kind": "delivery",
+      "schedule": { "kind": "weekly", "weekday": "monday" },
+      "startTime": "16:00",
+      "durationMinutes": 60,
+      "location": "",
+      "bring": [],
+      "notes": "Between 4 and 5."
+    },
+    {
+      "id": "evt-bins",
+      "title": "Blue bin out",
+      "memberId": "nicky",
+      "kind": "householdRoutine",
+      "schedule": { "kind": "weekly", "weekday": "monday" },
+      "startTime": "20:00",
+      "durationMinutes": 0,
+      "location": "",
+      "bring": [],
+      "notes": ""
+    }
+  ],
+  "reminders": [
+    {
+      "id": "rem-insurance",
+      "title": "Car insurance renews",
+      "detail": "Shop around before it auto renews.",
+      "relatedEventId": "evt-insurance",
+      "leadDays": 21,
+      "createdOffsetDays": -3,
+      "source": "email"
+    }
+  ],
+  "insights": [
+    {
+      "id": "insight-birthday",
+      "title": "Katie's birthday",
+      "kind": "birthday",
+      "relatedEventId": "evt-katie-birthday",
+      "detailTemplate": "{days} days",
+      "body": "Want me to make sure you don't forget?",
+      "action": "Yes, remind me",
+      "acceptedResponse": "Done. I'll give you a nudge two weeks before.",
+      "source": "calendar"
+    },
+    {
+      "id": "insight-insurance",
+      "title": "Car insurance",
+      "kind": "renewal",
+      "relatedEventId": "evt-insurance",
+      "detailTemplate": "Renews {date}",
+      "body": "I'll keep an eye on this before it gets close.",
+      "action": "Got it",
+      "acceptedResponse": "I'll bring it up in good time.",
+      "source": "email"
+    },
+    {
+      "id": "insight-swimming",
+      "title": "Sunny's swimming",
+      "kind": "routine",
+      "relatedEventId": "evt-swimming",
+      "detailTemplate": "{weekday} · {time}",
+      "body": "Looks like this is part of your weekend routine.",
+      "action": "That's right",
+      "acceptedResponse": "Noted. I'll plan your Saturdays around it.",
+      "source": "calendar"
+    }
+  ],
+  "emailInsights": [
+    {
+      "id": "email-insurance",
+      "subject": "Your car insurance renewal",
+      "sender": "Aviva",
+      "kind": "renewal",
+      "extractedTitle": "Car insurance",
+      "extractedDetail": "Renews 14 October",
+      "schedule": { "kind": "annual", "month": 10, "day": 14 },
+      "receivedOffsetDays": -3
+    },
+    {
+      "id": "email-booking",
+      "subject": "Your booking is confirmed",
+      "sender": "Kingsway Leisure",
+      "kind": "booking",
+      "extractedTitle": "Swimming block booking",
+      "extractedDetail": "Saturdays until December",
+      "schedule": { "kind": "weekly", "weekday": "saturday" },
+      "receivedOffsetDays": -18
+    },
+    {
+      "id": "email-bill",
+      "subject": "Your bill is ready",
+      "sender": "Octopus Energy",
+      "kind": "bill",
+      "extractedTitle": "Energy bill",
+      "extractedDetail": "Due in 9 days",
+      "schedule": { "kind": "relativeDay", "offset": 9 },
+      "receivedOffsetDays": -1
+    }
+  ],
+  "shopping": {
+    "id": "list-shopping",
+    "title": "Shopping",
+    "items": [
+      { "id": "item-milk", "text": "Milk", "checked": false, "addedByMemberId": "nicky" },
+      { "id": "item-nappies", "text": "Nappies", "checked": false, "addedByMemberId": "nicky" },
+      { "id": "item-dishwasher", "text": "Dishwasher tablets", "checked": false, "addedByMemberId": "katie" },
+      { "id": "item-bananas", "text": "Bananas", "checked": false, "addedByMemberId": "katie" },
+      { "id": "item-coffee", "text": "Coffee", "checked": false, "addedByMemberId": "nicky" },
+      { "id": "item-cards", "text": "Birthday cards", "checked": false, "addedByMemberId": "nicky" }
+    ]
+  },
+  "meals": [
+    { "weekday": "saturday", "time": "17:30", "title": "Chicken pesto pasta", "suggestion": "You've already got most of what you need.", "missingIngredients": ["Pesto", "Parmesan"] },
+    { "weekday": "sunday", "time": "17:30", "title": "Roast leftovers", "suggestion": "Nothing to buy.", "missingIngredients": [] },
+    { "weekday": "monday", "time": "17:30", "title": "Fish pie", "suggestion": "You'll need a couple of things.", "missingIngredients": ["Haddock"] },
+    { "weekday": "tuesday", "time": "17:30", "title": "Pasta bake", "suggestion": "Everything's in.", "missingIngredients": [] },
+    { "weekday": "wednesday", "time": "17:30", "title": "Chilli", "suggestion": "Everything's in.", "missingIngredients": [] },
+    { "weekday": "thursday", "time": "17:30", "title": "Jacket potatoes", "suggestion": "Everything's in.", "missingIngredients": [] },
+    { "weekday": "friday", "time": "17:30", "title": "Something easy", "suggestion": "Friday is usually a takeaway.", "missingIngredients": [] }
+  ],
+  "routineAnchors": [
+    { "id": "anchor-easy-morning", "time": "09:00", "title": "Easy morning", "detail": "No rush today.", "weekdays": ["saturday", "sunday"] },
+    { "id": "anchor-lunch", "time": "12:00", "title": "Lunch", "detail": "", "weekdays": ["saturday"] }
+  ],
+  "briefings": [
+    {
+      "id": "briefing-weekday",
+      "weekdays": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+      "time": "07:30",
+      "title": "Arty",
+      "body": "Morning. Four things today. Sunny has nursery, you've got a 10am meeting, Tesco is coming 4 to 5pm and it's bin night. Nothing else needs you."
+    },
+    {
+      "id": "briefing-weekend",
+      "weekdays": ["saturday", "sunday"],
+      "time": "08:00",
+      "title": "Arty",
+      "body": "Morning. Swimming at 10, so you'll want to leave around 9:25. The rest of the day is yours."
+    }
+  ],
+  "notificationPreviews": [
+    { "id": "preview-morning", "title": "Arty", "body": "Morning. Four things today. Sunny has nursery, you've got a 10am meeting, Tesco is coming 4 to 5pm and it's bin night. Nothing else needs you.", "deepLink": "arty://plan/today" },
+    { "id": "preview-leave", "title": "Arty", "body": "Swimming at 5. You'll want to leave around 4:25.", "deepLink": "arty://plan/today" },
+    { "id": "preview-bins", "title": "Arty", "body": "Blue bin tonight.", "deepLink": "arty://plan/today" },
+    { "id": "preview-week", "title": "Arty", "body": "Next week's looking busy. I've spotted three things worth knowing.", "deepLink": "arty://plan/week" }
+  ],
+  "weekInsights": [
+    "Wednesday looks like your busiest day.",
+    "You've got nothing planned Sunday afternoon."
+  ],
+  "scenarios": [
+    { "id": "default", "title": "Default household", "excludeEventIds": [], "extraEvents": [] },
+    { "id": "birthday", "title": "Birthday approaching", "excludeEventIds": [], "extraEvents": [], "forceInsightIds": ["insight-birthday"] },
+    { "id": "insurance", "title": "Insurance renewal discovered", "excludeEventIds": [], "extraEvents": [], "forceInsightIds": ["insight-insurance"] },
+    {
+      "id": "busyDay",
+      "title": "Busy day",
+      "excludeEventIds": [],
+      "extraEvents": [
+        { "id": "evt-scn-meeting", "title": "Team meeting", "memberId": "nicky", "kind": "work", "schedule": { "kind": "relativeDay", "offset": 0 }, "startTime": "10:00", "durationMinutes": 60, "location": "", "bring": [], "notes": "" },
+        { "id": "evt-scn-optician", "title": "Optician", "memberId": "katie", "kind": "appointment", "schedule": { "kind": "relativeDay", "offset": 0 }, "startTime": "13:15", "durationMinutes": 30, "location": "High Street", "leaveAt": "13:00", "bring": [], "notes": "" },
+        { "id": "evt-scn-party", "title": "Birthday party", "memberId": "sunny", "kind": "activity", "schedule": { "kind": "relativeDay", "offset": 0 }, "startTime": "15:30", "durationMinutes": 90, "location": "Soft play", "leaveAt": "15:10", "bring": ["Present"], "notes": "" }
+      ]
+    },
+    { "id": "quietDay", "title": "Quiet day", "excludeEventIds": ["evt-swimming", "evt-nursery-tue", "evt-nursery-thu", "evt-dentist", "evt-delivery", "evt-bins", "evt-work-mon", "evt-work-tue", "evt-work-thu"], "extraEvents": [] },
+    { "id": "freeWeekend", "title": "Free weekend", "excludeEventIds": ["evt-swimming", "evt-lunch-mums"], "extraEvents": [] },
+    { "id": "artyAlert", "title": "Arty alert", "excludeEventIds": [], "extraEvents": [], "forceAlert": "Your passport expires in six weeks and you've got a trip booked. Worth sorting now." }
+  ]
+}
