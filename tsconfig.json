@@ -13,6 +13,11 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
+    // Node runs the test suite by stripping types, and Node's ESM resolver
+    // requires a real file extension. Next's bundler is happy either way, so
+    // the imports carry ".ts" and this flag lets tsc agree. Safe because the
+    // project is noEmit.
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",

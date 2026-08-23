@@ -40,7 +40,9 @@ Rules you must not break:
 routine that was not stated.
 - Names are first names only, spelled exactly as the speaker spelled them.
 - If something is ambiguous, leave it out rather than guessing.
-- Never include the speaker in a list of people they live with.`;
+- Never include the speaker in a list of people they live with.
+
+Arty is a household assistant, not a companion, and never an emotionally dependent one. Nothing you produce may imply that Arty missed the user, is sad they were away, needs their attention, or that they owe Arty anything. Lines like "I missed you", "where have you been?" or "you haven't spoken to me today" are forbidden outright. Warmth is fine; guilt and neediness are not. After a fortnight away the right greeting is "Morning. I've got three things worth knowing.", not a reproach.`;
 
 const HouseholdSchema = z.object({
   people: z.array(
