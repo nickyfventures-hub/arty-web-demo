@@ -20,9 +20,10 @@ import {
   UserCircle2,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ArtyCharacter from "@/components/ArtyCharacter";
 import { CharacterPicker } from "./CharacterStep";
+import MagicShowcase, { DemoDevPanel } from "./MagicShowcase";
 import { track } from "@/lib/analytics";
 import {
   ArtySays,
@@ -59,6 +60,11 @@ export default function MainApp() {
       <div className="flex-1 overflow-hidden">
         {state.tab === "plan" ? <PlanScreen /> : <CalendarScreen />}
       </div>
+
+      <Suspense>
+        <MagicShowcase />
+        <DemoDevPanel />
+      </Suspense>
 
       <BottomNav />
 
@@ -178,9 +184,17 @@ function PlanScreen() {
           {/* Nobody should be able to mistake the Faircloughs for their own
               family, or a simulated calendar for a connected one. */}
           {state.isDemo && (
-            <p className="mt-1.5 inline-flex rounded-full bg-accent-muted px-2.5 py-1 text-[12px] font-medium text-accent">
-              Demo household · not real data
-            </p>
+            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+              <span className="inline-flex rounded-full bg-accent-muted px-2.5 py-1 text-[12px] font-medium text-accent">
+                Demo household
+              </span>
+              <button
+                onClick={() => dispatch({ type: "startMagic", scenario: "full" })}
+                className="inline-flex min-h-[28px] items-center rounded-full border border-accent/40 px-2.5 text-[12px] font-medium text-accent transition active:scale-95"
+              >
+                See what Arty&rsquo;s been doing
+              </button>
+            </div>
           )}
         </div>
         <button

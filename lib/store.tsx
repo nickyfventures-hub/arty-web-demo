@@ -71,6 +71,13 @@ export interface State {
   /** Whether this deployment has a model behind it. */
   aiAvailable: boolean;
   /**
+   * A requested magic-demo scenario: a moment id, "full" for the guided reel,
+   * or null. Set by the Plan chip, the /demo/[scenario] routes and the dev
+   * panel; consumed by MagicShowcase. Demo layer only — never set outside
+   * demo sessions.
+   */
+  magicRequest: string | null;
+  /**
    * Which Arty this household chose, and its accent. Belongs to the
    * household, never to one adult: one home, one Arty. Changing it changes
    * appearance and nothing else.
@@ -109,6 +116,8 @@ export type Action =
   | { type: "addMember"; name: string; role: "adult" | "child" }
   | { type: "setAIAvailable"; available: boolean }
   | { type: "setArtyProfile"; family: ArtyCharacterFamily; accent: ArtyAccent }
+  | { type: "startMagic"; scenario: string }
+  | { type: "endMagic" }
   | { type: "connectCalendar" }
   | { type: "connectEmail" }
   | { type: "setAppetite"; id: string }
@@ -151,6 +160,7 @@ export function initialState(now = new Date()): State {
     householdStage: "who",
     isEditingHousehold: false,
     aiAvailable: false,
+    magicRequest: null,
     artyProfile: defaultArtyProfile(now),
     calendarConnected: false,
     emailConnected: false,
@@ -296,6 +306,10 @@ function reducer(state: State, action: Action): State {
 
     case "setAIAvailable":
       return { ...state, aiAvailable: action.available };
+    case "startMagic":
+      return { ...state, magicRequest: action.scenario, tab: "plan", overlay: "none" };
+    case "endMagic":
+      return { ...state, magicRequest: null, characterState: "idle" };
     case "setArtyProfile":
       // Appearance only. Household memory, reminders, lists and everything
       // else in this state are deliberately untouched: Arty's appearance
@@ -379,7 +393,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // cover. Read once, when the reducer initialises.
   const pathname = usePathname();
   const [state, dispatch] = useReducer(reducer, undefined, () =>
-    pathname === "/demo" ? demoState() : initialState(),
+    pathname?.startsWith("/demo") ? demoState() : initialState(),
   );
   const value = useMemo(() => ({ state, dispatch }), [state]);
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

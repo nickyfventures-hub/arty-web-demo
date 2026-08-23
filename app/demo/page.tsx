@@ -12,9 +12,12 @@
  * gets shown here is genuinely what gets built.
  */
 
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect } from "react";
 import PhoneShell from "@/components/PhoneShell";
 import MainApp from "@/components/screens/MainApp";
 import Onboarding from "@/components/screens/Onboarding";
+import { SCENARIO_SLUGS } from "@/lib/magic";
 import { useStore } from "@/lib/store";
 
 export default function Demo() {
@@ -22,7 +25,25 @@ export default function Demo() {
 
   return (
     <PhoneShell>
+      <Suspense>
+        <ScenarioFromQuery />
+      </Suspense>
       {state.step === null ? <MainApp /> : <Onboarding />}
     </PhoneShell>
   );
+}
+
+/** ?scenario=insurance is the query-string spelling of /demo/insurance. */
+function ScenarioFromQuery() {
+  const { dispatch } = useStore();
+  const params = useSearchParams();
+
+  useEffect(() => {
+    const scenario = params.get("scenario");
+    if (scenario && (SCENARIO_SLUGS as readonly string[]).includes(scenario)) {
+      dispatch({ type: "startMagic", scenario });
+    }
+  }, [params, dispatch]);
+
+  return null;
 }

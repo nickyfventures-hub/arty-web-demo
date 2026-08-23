@@ -15,9 +15,27 @@ export type AnalyticsEvent =
   | "arty_character_picker_viewed"
   | "arty_character_previewed"
   | "arty_character_selected"
-  | "arty_character_changed";
+  | "arty_character_changed"
+  | "demo_started"
+  | "demo_completed"
+  | "magic_memory_viewed"
+  | "magic_insurance_viewed"
+  | "magic_bins_viewed"
+  | "magic_car_service_viewed"
+  | "magic_inbox_viewed"
+  | "magic_relationship_viewed"
+  | "magic_weekend_viewed"
+  | "magic_moment_interacted"
+  | "waitlist_viewed"
+  | "waitlist_started"
+  | "waitlist_completed";
 
 export interface AnalyticsProperties {
+  moment_id?: string;
+  action_id?: string;
+  /** Which magic moment immediately preceded a waitlist signup. */
+  preceding_moment?: string;
+  recording?: boolean;
   character_family?: "companion" | "concierge" | "visitor" | "essence";
   accent?: "navy" | "forest" | "terracotta" | "plum" | "sand";
   onboarding_stage?: string;
