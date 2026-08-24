@@ -213,10 +213,39 @@ describe("the engine itself", () => {
       if (moment.evidence) total += TIMING.evidenceMs;
       if (moment.afterEvidence) total += TIMING.evidenceMs;
       if (moment.actions) total += TIMING.actionAutoMs + TIMING.sheetMs + TIMING.responseMs;
+      if (moment.notification) total += TIMING.bannerMs;
     }
     const seconds = (total * RECORDING_SPEED) / 1000;
     assert.ok(seconds >= 35, `reel too short: ${seconds.toFixed(1)}s`);
     assert.ok(seconds <= 60, `reel too long: ${seconds.toFixed(1)}s`);
+  });
+
+  test("the reel is voice-first: it opens and closes with the person speaking", () => {
+    const first = momentById(SEQUENCE[0])!;
+    const last = momentById(SEQUENCE[SEQUENCE.length - 1])!;
+    assert.ok(first.spoken, "the reel must open with a voice interaction");
+    assert.ok(last.spoken, "the reel must close with a voice interaction");
+  });
+
+  test("every proactive moment arrives as a notification of work already done", () => {
+    for (const moment of MOMENTS) {
+      if (moment.spoken) continue; // voice moments are person-initiated
+      assert.ok(moment.notification, `${moment.id} is proactive but has no notification`);
+      assert.equal(moment.trigger, "notification");
+    }
+  });
+
+  test("notification copy reports outcomes, not chores", () => {
+    // The banner is the closed loop made visible: it says what Arty DID.
+    const inbox = momentById("inbox")!.notification!;
+    assert.match(inbox.title, /handled/i);
+    const insurance = momentById("insurance")!.notification!;
+    assert.match(insurance.title, /already shopped around/i);
+    for (const moment of MOMENTS) {
+      if (!moment.notification) continue;
+      assert.doesNotMatch(moment.notification.title, /!/);
+      assert.ok(moment.notification.title.length <= 60, `${moment.id} banner title too long`);
+    }
   });
 
   test("no copy shouts", () => {

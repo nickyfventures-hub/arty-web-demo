@@ -18,6 +18,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Car,
   Flower2,
+  Mic,
   Gift,
   Inbox,
   Mail,
@@ -57,6 +58,7 @@ const EMBLEMS: Record<MagicMoment["emblem"], LucideIcon> = {
 };
 
 type Phase =
+  | "banner"
   | "notice"
   | "spoken"
   | "lines"
@@ -118,7 +120,7 @@ export default function MagicShowcase() {
     if (!request) return;
     clearTimers();
     setIndex(0);
-    setPhase("notice");
+    setPhase(momentById(queue[0] ?? "")?.notification ? "banner" : "notice");
     setLineCount(0);
     setSpokenWords(0);
     setFinale(null);
@@ -131,7 +133,7 @@ export default function MagicShowcase() {
   useEffect(() => {
     if (!moment) return;
     track(`magic_${moment.id.replace("-", "_")}_viewed` as never, { recording });
-    dispatch({ type: "setCharacter", state: moment.artyState });
+    if (!moment.notification) dispatch({ type: "setCharacter", state: moment.artyState });
   }, [moment, dispatch, recording]);
 
   const advanceMoment = useCallback(() => {
@@ -139,8 +141,9 @@ export default function MagicShowcase() {
     setLineCount(0);
     setSpokenWords(0);
     if (index + 1 < queue.length) {
+      const next = momentById(queue[index + 1] ?? "");
       setIndex(index + 1);
-      setPhase("notice");
+      setPhase(next?.notification ? "banner" : "notice");
       return;
     }
     if (guided) {
@@ -157,7 +160,14 @@ export default function MagicShowcase() {
   useEffect(() => {
     if (!moment) return;
 
+    if (phase === "banner") {
+      dispatch({ type: "setCharacter", state: "idle" });
+      if (recording) later(TIMING.bannerMs, () => setPhase("notice"));
+      return;
+    }
+
     if (phase === "notice") {
+      dispatch({ type: "setCharacter", state: moment.artyState });
       later(TIMING.noticeMs, () => setPhase(moment.spoken ? "spoken" : "lines"));
       return;
     }
@@ -296,7 +306,17 @@ export default function MagicShowcase() {
         />
       )}
 
-      {moment && !finale && (
+      <AnimatePresence>
+        {moment && !finale && phase === "banner" && moment.notification && (
+          <NotificationBanner
+            key={`banner-${moment.id}`}
+            notification={moment.notification}
+            onOpen={() => setPhase("notice")}
+          />
+        )}
+      </AnimatePresence>
+
+      {moment && !finale && phase !== "banner" && (
         <MomentStage
           key={moment.id}
           moment={moment}
@@ -312,6 +332,60 @@ export default function MagicShowcase() {
         />
       )}
     </div>
+  );
+}
+
+// MARK: - The notification banner
+//
+// How proactive Arty reaches a person: one banner, in the product's voice,
+// reporting work already done. Tap to open the scene. While it shows, the
+// stage behind is the resting product — Arty idle, "Nothing needs you" calm —
+// because the point is that the work happened without anybody watching.
+
+function NotificationBanner({
+  notification,
+  onOpen,
+}: {
+  notification: { title: string; body: string };
+  onOpen: () => void;
+}) {
+  const { state } = useStore();
+  return (
+    <>
+      {/* The resting product behind the banner */}
+      <div className="pointer-events-none absolute inset-0 -z-10 flex flex-col items-center justify-center gap-4 pb-24">
+        <ArtyCharacter state="idle" size={140} />
+        <p className="text-[17px] font-medium text-ink-secondary">Everything&rsquo;s under control.</p>
+      </div>
+
+      <motion.button
+        initial={{ y: -90, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -90, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 26 }}
+        onClick={onOpen}
+        className="absolute inset-x-3 top-10 z-20 rounded-2xl border border-white/60 bg-white/85 p-3.5 text-left shadow-[0_14px_40px_rgba(28,27,25,0.18)] backdrop-blur-xl"
+        aria-label={`Notification from Arty: ${notification.title}. Open.`}
+      >
+        <div className="flex items-start gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-accent-muted">
+            <ArtyCharacter state={state.characterState} size={30} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="flex items-baseline justify-between gap-2">
+              <span className="text-[13px] font-semibold text-ink">Arty</span>
+              <span className="text-[11px] text-ink-secondary">now</span>
+            </span>
+            <span className="block text-[14px] font-semibold leading-snug text-ink">
+              {notification.title}
+            </span>
+            <span className="block text-[13px] leading-snug text-ink-secondary">
+              {notification.body}
+            </span>
+          </span>
+        </div>
+      </motion.button>
+    </>
   );
 }
 
@@ -369,8 +443,16 @@ function MomentStage({
 
         {/* The scripted voice line, typed as it is "spoken" */}
         {moment.spoken && phase !== "notice" && (
-          <div className="flex min-h-[54px] flex-col items-center gap-2">
-            {phase === "spoken" && <Waveform level={0.4 + (spokenWords % 3) * 0.18} />}
+          <div className="flex min-h-[64px] flex-col items-center gap-2">
+            {phase === "spoken" && (
+              <div className="flex flex-col items-center gap-1.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-white shadow-[0_6px_16px_rgba(31,111,107,0.3)]">
+                  <Mic size={15} />
+                </span>
+                <Waveform level={0.4 + (spokenWords % 3) * 0.18} />
+                <p className="text-[12px] font-medium text-accent">{copy.assistant.listening}</p>
+              </div>
+            )}
             <p className="text-center text-[18px] font-medium text-ink">
               &ldquo;{moment.spoken.split(" ").slice(0, spokenWords || undefined).join(" ")}
               {spokenWords < moment.spoken.split(" ").length ? "…" : ""}&rdquo;

@@ -70,6 +70,17 @@ export interface MomentSheet {
   ctaResponse?: string;
 }
 
+/**
+ * How a proactive moment announces itself: a notification, in the product's
+ * own voice, reporting what Arty has ALREADY done or noticed — never "open
+ * the app to find out". Tapping it opens the scene. This is the closed loop
+ * made visible: notice → work → report back.
+ */
+export interface MomentNotification {
+  title: string;
+  body: string;
+}
+
 export interface MagicMoment {
   id: string;
   category:
@@ -87,6 +98,8 @@ export interface MagicMoment {
   artyState: CharacterState;
   /** Small object that appears beside Arty while the moment plays. */
   emblem: "gift" | "envelope" | "bin" | "car" | "inbox" | "flower" | "sun" | "sparkle";
+  /** Present when the moment arrives as a notification of work already done. */
+  notification?: MomentNotification;
   /** A scripted voice line the "user" says first, for voice-triggered moments. */
   spoken?: string;
   /** Lines Arty says, revealed one after another. */
@@ -145,6 +158,10 @@ export const MOMENTS: MagicMoment[] = [
     autonomy: "require_approval",
     artyState: "alert",
     emblem: "envelope",
+    notification: {
+      title: "Your renewal came in — I've already shopped around",
+      body: "£684 this year. I found comparable cover for £512.",
+    },
     lines: [
       "Your car insurance renewal arrived.",
       "That's £118 more than last year.",
@@ -178,10 +195,14 @@ export const MOMENTS: MagicMoment[] = [
   {
     id: "bins",
     category: "household",
-    trigger: "automatic",
+    trigger: "notification",
     autonomy: "observe",
     artyState: "speaking",
     emblem: "bin",
+    notification: {
+      title: "Blue bin tonight",
+      body: "Collection's usually early — I'd put it out this evening.",
+    },
     lines: [
       "Weekend's coming up.",
       "Blue bin tonight.",
@@ -192,10 +213,14 @@ export const MOMENTS: MagicMoment[] = [
   {
     id: "car-service",
     category: "money",
-    trigger: "automatic",
+    trigger: "notification",
     autonomy: "suggest",
     artyState: "thinking",
     emblem: "car",
+    notification: {
+      title: "I've worked out the car service",
+      body: "Due in about two months. I've done the sums.",
+    },
     lines: ["Your car service is about two months away.", "Last year's cost was £318."],
     afterEvidence:
       "Putting aside about £40 a week for the next 8 weeks would cover roughly the same amount.",
@@ -215,10 +240,14 @@ export const MOMENTS: MagicMoment[] = [
   {
     id: "inbox",
     category: "email",
-    trigger: "automatic",
+    trigger: "notification",
     autonomy: "act_and_report",
     artyState: "pleased",
     emblem: "inbox",
+    notification: {
+      title: "I handled your inbox",
+      body: "4 marketing emails dealt with. Nothing needs you.",
+    },
     lines: [
       "Nothing in your inbox needs you today.",
       "You had 4 emails. They were all marketing.",
@@ -251,10 +280,14 @@ export const MOMENTS: MagicMoment[] = [
   {
     id: "relationship",
     category: "relationship",
-    trigger: "automatic",
+    trigger: "notification",
     autonomy: "suggest",
     artyState: "speaking",
     emblem: "flower",
+    notification: {
+      title: "A thought about Katie",
+      body: "She's having a rough day. I've found something small.",
+    },
     lines: [
       "Katie's having a bit of a rough day.",
       "You told me she likes peonies and tulips.",
@@ -279,10 +312,11 @@ export const MOMENTS: MagicMoment[] = [
   {
     id: "weekend",
     category: "planning",
-    trigger: "automatic",
+    trigger: "voice",
     autonomy: "suggest",
-    artyState: "pleased",
+    artyState: "listening",
     emblem: "sun",
+    spoken: "What's Saturday looking like?",
     lines: ["Saturday's looking good."],
     evidence: [
       { label: "10:00", value: "Sunny's swimming" },
@@ -336,12 +370,14 @@ export const SCENARIO_SLUGS = [...SEQUENCE, "full"] as const;
 export const TIMING = {
   /** Pause before Arty starts talking, while the state change lands. */
   noticeMs: 700,
+  /** How long a notification banner hangs before recording mode taps it. */
+  bannerMs: 1600,
   /** Default hold per line. */
-  lineMs: 1100,
+  lineMs: 1000,
   /** Hold on evidence rows. */
-  evidenceMs: 1600,
+  evidenceMs: 1500,
   /** How long recording mode leaves a sheet open before moving on. */
-  sheetMs: 2200,
+  sheetMs: 2000,
   /** Wait on actions before recording mode auto-chooses the primary. */
   actionAutoMs: 1200,
   /** Hold on a sheet's confirmation line. */
