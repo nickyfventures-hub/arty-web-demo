@@ -90,11 +90,44 @@ const IntentSchema = z.object({
 });
 
 const BodySchema = z.object({
-  kind: z.enum(["household", "details", "intent"]),
+  kind: z.enum(["household", "details", "intent", "chat", "ideas"]),
   text: z.string().min(1).max(2000),
   ownerName: z.string().max(80).optional(),
   knownNames: z.array(z.string().max(80)).max(20).optional(),
+  /** For chat and ideas: light household context, never secrets. */
+  context: z
+    .object({
+      postcode: z.string().max(12).optional(),
+      childAges: z.array(z.number().min(0).max(18)).max(6).optional(),
+      dayContext: z.string().max(120).optional(),
+    })
+    .optional(),
 });
+
+const ChatSchema = z.object({
+  reply: z.string().describe("Arty's reply: warm, concise, British, at most three sentences."),
+});
+
+const IdeasSchema = z.object({
+  intro: z.string().describe("One short line introducing the ideas, e.g. \"I've got a couple of thoughts.\""),
+  ideas: z
+    .array(
+      z.object({
+        title: z.string().describe("The activity, a few words."),
+        why: z.string().describe("One short line on why it fits this family."),
+      }),
+    )
+    .min(2)
+    .max(3),
+});
+
+/** The rules that keep open chat honest and un-needy. */
+const CHAT_SYSTEM = `You are Arty, a calm British household assistant — warm, friendly, concise and understated. You may chat openly about anything, but:
+
+- Never invent facts about this household. If asked something about the family you have not been told, say you don't have that yet and invite them to tell you.
+- Never imply emotional dependence: no "I missed you", no guilt for absence, no neediness. Warmth is fine; clinginess is not.
+- No exclamation marks, no emoji, no motivational-coach tone.
+- Two or three sentences at most. You are helpful company, not an essay.`;
 
 /**
  * Whether credentials are resolvable.
@@ -164,6 +197,48 @@ export async function POST(request: Request) {
         return NextResponse.json({ available: false, reason: "unparsed" });
       }
       return NextResponse.json({ available: true, details: response.parsed_output });
+    }
+
+    if (body.kind === "chat") {
+      const response = await client.messages.parse({
+        model: MODEL,
+        max_tokens: 1024,
+        system: CHAT_SYSTEM,
+        output_config: { effort: "low", format: zodOutputFormat(ChatSchema) },
+        messages: [{ role: "user", content: body.text }],
+      });
+      if (!response.parsed_output) {
+        return NextResponse.json({ available: false, reason: "unparsed" });
+      }
+      return NextResponse.json({ available: true, chat: response.parsed_output });
+    }
+
+    if (body.kind === "ideas") {
+      const context = [
+        body.context?.postcode ? `Home is near postcode ${body.context.postcode}.` : "",
+        body.context?.childAges?.length
+          ? `Children aged ${body.context.childAges.join(" and ")}.`
+          : "",
+        body.context?.dayContext ? `Context: ${body.context.dayContext}.` : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      const response = await client.messages.parse({
+        model: MODEL,
+        max_tokens: 1024,
+        system: CHAT_SYSTEM,
+        output_config: { effort: "low", format: zodOutputFormat(IdeasSchema) },
+        messages: [
+          {
+            role: "user",
+            content: `${context || "A UK family."} They asked: "${body.text}". Suggest family activities that genuinely fit. Free or low-cost ideas are welcome. These are suggestions, not bookings.`,
+          },
+        ],
+      });
+      if (!response.parsed_output) {
+        return NextResponse.json({ available: false, reason: "unparsed" });
+      }
+      return NextResponse.json({ available: true, ideas: response.parsed_output });
     }
 
     const response = await client.messages.parse({
