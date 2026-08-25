@@ -65,7 +65,20 @@ function recognitionConstructor(): RecognitionConstructor | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-export type VoiceMode = "real" | "scripted";
+export type VoiceMode = "real" | "recorded" | "scripted";
+
+// One probe per session: is the server-side transcriber configured?
+let scribeAvailable: boolean | null = null;
+async function transcribeAvailable(): Promise<boolean> {
+  if (scribeAvailable !== null) return scribeAvailable;
+  try {
+    const response = await fetch("/api/transcribe", { method: "GET" });
+    scribeAvailable = ((await response.json()) as { available?: boolean }).available === true;
+  } catch {
+    scribeAvailable = false;
+  }
+  return scribeAvailable;
+}
 
 export interface Voice {
   listening: boolean;
@@ -87,6 +100,7 @@ export function useVoice(onFinish: (text: string) => void): Voice {
   const [problem, setProblem] = useState<string | null>(null);
 
   const recognition = useRef<RecognitionLike | null>(null);
+  const recorder = useRef<MediaRecorder | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const audio = useRef<AudioContext | null>(null);
   const frame = useRef<number | null>(null);
@@ -98,6 +112,8 @@ export function useVoice(onFinish: (text: string) => void): Voice {
     frame.current = null;
     recognition.current?.abort();
     recognition.current = null;
+    if (recorder.current?.state === "recording") recorder.current.stop();
+    recorder.current = null;
     stream.current?.getTracks().forEach((track) => track.stop());
     stream.current = null;
     audio.current?.close().catch(() => {});
@@ -195,9 +211,45 @@ export function useVoice(onFinish: (text: string) => void): Voice {
           frame.current = requestAnimationFrame(tick);
 
           if (!Recognition) {
-            // Real ears, scripted words.
-            setProblem("This browser can't transcribe speech, so Arty is using an example.");
-            runScripted(fallback);
+            // No recogniser in this browser. If the server-side transcriber
+            // is configured, record the real words and send them up on stop;
+            // otherwise fall back to the scripted example, and say so.
+            void transcribeAvailable().then((canTranscribe) => {
+              if (!canTranscribe || typeof MediaRecorder === "undefined") {
+                setProblem("This browser can't transcribe speech, so Arty is using an example.");
+                runScripted(fallback);
+                return;
+              }
+              setMode("recorded");
+              const capture = new MediaRecorder(granted);
+              recorder.current = capture;
+              const chunks: Blob[] = [];
+              capture.ondataavailable = (event) => {
+                if (event.data.size > 0) chunks.push(event.data);
+              };
+              capture.onstop = async () => {
+                setPartial("");
+                dispatch({ type: "setCharacter", state: "thinking" });
+                try {
+                  const response = await fetch("/api/transcribe", {
+                    method: "POST",
+                    body: new Blob(chunks, { type: capture.mimeType || "audio/webm" }),
+                  });
+                  const data = (await response.json()) as { text?: string };
+                  const heard = data.text?.trim();
+                  if (heard) {
+                    onFinish(heard);
+                  } else {
+                    setProblem("I didn't catch that. Try again, or type instead.");
+                    dispatch({ type: "setCharacter", state: "idle" });
+                  }
+                } catch {
+                  setProblem("I couldn't reach transcription. Typing works exactly the same.");
+                  dispatch({ type: "setCharacter", state: "idle" });
+                }
+              };
+              capture.start();
+            });
             return;
           }
 

@@ -25,6 +25,8 @@ import ArtyCharacter from "@/components/ArtyCharacter";
 import { CharacterPicker } from "./CharacterStep";
 import MagicShowcase, { DemoDevPanel } from "./MagicShowcase";
 import { track } from "@/lib/analytics";
+import { canonicaliseUtterance, isAIAvailable } from "@/lib/ai";
+import { useSpeak } from "@/lib/voiceOut";
 import {
   ArtySays,
   EmptyState,
@@ -53,7 +55,19 @@ import { useStore } from "@/lib/store";
 import { useVoice } from "@/lib/useVoice";
 
 export default function MainApp() {
-  const { state } = useStore();
+  const { state, dispatch } = useStore();
+
+  // Which brain is available? Probed once, so the assistant can hand
+  // understanding to Claude when a key is configured.
+  useEffect(() => {
+    let cancelled = false;
+    isAIAvailable().then((available) => {
+      if (!cancelled) dispatch({ type: "setAIAvailable", available });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch]);
 
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden">
@@ -460,6 +474,7 @@ function AssistantScreen() {
   const { state, dispatch } = useStore();
   const [input, setInput] = useState(state.artyPrefill);
   const [followUp, setFollowUp] = useState<ReturnType<typeof respond>["followUp"]>(undefined);
+  const voice = useSpeak();
   const scroller = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
@@ -482,8 +497,16 @@ function AssistantScreen() {
       setInput("");
       setFollowUp(undefined);
 
-      const timer = setTimeout(() => {
-        const reply = respond(trimmed, state.snapshot, { now: state.now, resolving });
+      const timer = setTimeout(async () => {
+        // When the brain is configured, let Claude decide what was MEANT;
+        // the deterministic engine still owns what happens next, so effects
+        // and permissions stay on one code path whichever brain answered.
+        let understood = trimmed;
+        if (state.aiAvailable && !resolving) {
+          const canonical = await canonicaliseUtterance(trimmed).catch(() => null);
+          if (canonical) understood = canonical;
+        }
+        const reply = respond(understood, state.snapshot, { now: state.now, resolving });
 
         for (const effect of reply.effects) {
           if (effect.kind === "addItems" && effect.items) {
@@ -506,6 +529,7 @@ function AssistantScreen() {
         });
         dispatch({ type: "setCharacter", state: reply.characterState });
         setFollowUp(reply.followUp);
+        void voice.speak(reply.message);
 
         timers.current.push(
           setTimeout(() => dispatch({ type: "setCharacter", state: "idle" }), 2400),
@@ -513,7 +537,7 @@ function AssistantScreen() {
       }, 620);
       timers.current.push(timer);
     },
-    [dispatch, state.now, state.snapshot],
+    [dispatch, state.now, state.snapshot, state.aiAvailable, voice],
   );
 
   // A real microphone where the browser allows one, and the scripted example

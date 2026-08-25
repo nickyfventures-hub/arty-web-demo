@@ -45,6 +45,7 @@ import {
 } from "@/lib/magic";
 import { useStore } from "@/lib/store";
 import { joinWaitlist, submitResearch } from "@/lib/waitlist";
+import { useSpeak } from "@/lib/voiceOut";
 
 const EMBLEMS: Record<MagicMoment["emblem"], LucideIcon> = {
   gift: Gift,
@@ -93,6 +94,7 @@ export default function MagicShowcase() {
   const [spokenWords, setSpokenWords] = useState(0);
   const [finale, setFinale] = useState<Finale>(null);
   const [whyOpen, setWhyOpen] = useState(false);
+  const voice = useSpeak();
 
   const moment = finale ? undefined : momentById(queue[index] ?? "");
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -187,6 +189,7 @@ export default function MagicShowcase() {
     }
 
     if (phase === "lines") {
+      if (lineCount === 1) void voice.speak(moment.lines[0]);
       if (lineCount < moment.lines.length) {
         later(lineCount === 0 ? 300 : moment.lineHoldMs ?? TIMING.lineMs, () =>
           setLineCount(lineCount + 1),
