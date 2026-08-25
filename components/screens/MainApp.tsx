@@ -27,6 +27,7 @@ import MagicShowcase, { DemoDevPanel } from "./MagicShowcase";
 import { track } from "@/lib/analytics";
 import { canonicaliseUtterance, isAIAvailable } from "@/lib/ai";
 import { useSpeak } from "@/lib/voiceOut";
+import { clearSession } from "@/lib/session";
 import {
   ArtySays,
   EmptyState,
@@ -874,10 +875,13 @@ function SettingsSheet() {
           {copy.settings.deleteAccount}
         </button>
         <button
-          onClick={() => dispatch({ type: "restart" })}
+          onClick={() => {
+            clearSession();
+            dispatch({ type: "restart" });
+          }}
           className="flex min-h-[48px] w-full items-center text-left text-[17px] text-ink"
         >
-          Start the demo again
+          {state.isDemo ? "Start the demo again" : "Start again from scratch"}
         </button>
       </SettingsGroup>
 
@@ -1091,7 +1095,10 @@ function DeletePage() {
       />
       <button
         disabled={!canDelete}
-        onClick={() => dispatch({ type: "restart" })}
+        onClick={() => {
+          clearSession();
+          dispatch({ type: "restart" });
+        }}
         className="min-h-[52px] w-full rounded-full bg-red-600 text-[17px] font-semibold text-white disabled:opacity-35"
       >
         {copy.settings.deleteConfirm}

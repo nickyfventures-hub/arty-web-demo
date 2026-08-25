@@ -263,6 +263,18 @@ function Connect({ onNext }: { onNext: () => void }) {
           <p className="text-[17px] text-ink-secondary">{copy.connect.support}</p>
         </Reveal>
 
+        {!state.isDemo && (
+          <Reveal delay={0.06} className="rounded-2xl bg-muted p-4">
+            <p className="text-[14px] leading-relaxed text-ink-secondary">
+              Calendar and email connections arrive with the iPhone app, where
+              they are real. Nothing is simulated for your own household — what
+              you see from here on is only what you tell Arty.
+            </p>
+          </Reveal>
+        )}
+
+        {state.isDemo && (
+        <>
         <ConnectSection
           icon={<Calendar size={18} />}
           title={copy.connect.calendarTitle}
@@ -290,6 +302,8 @@ function Connect({ onNext }: { onNext: () => void }) {
           note={state.emailConnected ? copy.connect.emailHonesty : undefined}
           delay={0.12}
         />
+        </>
+        )}
 
         <Reveal delay={0.18} className="space-y-2.5">
           <h3 className="flex items-center gap-2 text-[17px] font-semibold text-ink">
@@ -400,7 +414,11 @@ function MagicMoment({ onNext }: { onNext: () => void }) {
             <ArtyCharacter state={state.characterState} size={165} />
           </div>
           <p className="text-center text-[20px] font-medium text-ink">
-            {turned ? copy.magic.turn : copy.magic.waiting}
+            {turned
+              ? insights.length > 0
+                ? copy.magic.turn
+                : copy.magic.emptyProduction
+              : copy.magic.waiting}
           </p>
         </div>
 

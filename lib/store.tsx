@@ -11,13 +11,16 @@
 import { usePathname } from "next/navigation";
 import {
   createContext,
+  useEffect,
   useContext,
   useMemo,
   useReducer,
   type Dispatch,
   type ReactNode,
 } from "react";
-import { buildSnapshot, type ListItem, type Snapshot } from "./fixtures";
+import { buildSnapshot, type ListItem, type Member, type Snapshot } from "./fixtures";
+import { emptySnapshot } from "./emptyHousehold";
+import { loadSession, saveSession, type SavedHousehold } from "./session";
 import {
   defaultArtyProfile,
   type ArtyAccent,
@@ -124,6 +127,7 @@ export type Action =
   | { type: "setArtyProfile"; family: ArtyCharacterFamily; accent: ArtyAccent }
   | { type: "startMagic"; scenario: string }
   | { type: "setPTT"; active: boolean }
+  | { type: "hydrate"; saved: SavedHousehold }
   | { type: "endMagic" }
   | { type: "connectCalendar" }
   | { type: "connectEmail" }
@@ -179,7 +183,9 @@ export function initialState(now = new Date()): State {
     segment: "today",
     overlay: "none",
     artyPrefill: "",
-    snapshot: buildSnapshot(now),
+    // A real session starts with nothing but what this household says.
+    // Fixture data exists only behind demoState below.
+    snapshot: emptySnapshot(""),
     transcript: [],
     characterState: "idle",
     micLevel: 0,
@@ -202,7 +208,7 @@ export function initialState(now = new Date()): State {
  * always this Saturday. Nothing here is anybody's real information.
  */
 export function demoState(now = new Date()): State {
-  const base = initialState(now);
+  const base = { ...initialState(now), snapshot: buildSnapshot(now) };
   const { members } = base.snapshot.household;
   const owner = members.find((member) => member.role === "owner");
 
@@ -236,8 +242,30 @@ function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "goTo":
       return { ...state, step: action.step, characterState: "idle" };
-    case "finishOnboarding":
-      return { ...state, step: null, tab: "plan", segment: "today", characterState: "idle" };
+    case "finishOnboarding": {
+      if (state.isDemo) {
+        return { ...state, step: null, tab: "plan", segment: "today", characterState: "idle" };
+      }
+      // The real household: the people from onboarding, and nothing else.
+      const colours = ["artyTeal", "artyPlum", "artyAmber", "artySage"];
+      const members: Member[] = state.extractedMembers.map((member, index) => ({
+        id: member.id,
+        name: member.name,
+        role: member.role,
+        descriptor:
+          state.extractedFacts.find((fact) => fact.name === member.name)?.lines[0] ??
+          (member.role === "child" ? "Child" : "Adult"),
+        colorToken: colours[index % colours.length],
+      }));
+      return {
+        ...state,
+        step: null,
+        tab: "plan",
+        segment: "today",
+        characterState: "idle",
+        snapshot: { ...emptySnapshot(state.ownerName, members), items: state.snapshot.items },
+      };
+    }
     case "restart":
       return state.isDemo ? demoState(state.now) : initialState(state.now);
     case "setName":
@@ -318,6 +346,24 @@ function reducer(state: State, action: Action): State {
       return { ...state, magicRequest: action.scenario, tab: "plan", overlay: "none" };
     case "setPTT":
       return { ...state, ptt: action.active };
+    case "hydrate": {
+      const saved = action.saved;
+      return {
+        ...state,
+        step: null,
+        ownerName: saved.ownerName,
+        extractedMembers: saved.members.map(({ id, name, role }) => ({ id, name, role })),
+        extractedFacts: saved.facts,
+        artyProfile: saved.artyProfile,
+        notificationAppetite: saved.notificationAppetite,
+        reminderCount: saved.reminderCount,
+        snapshot: {
+          ...emptySnapshot(saved.ownerName, saved.members),
+          items: saved.items,
+          memories: saved.memories,
+        },
+      };
+    }
     case "endMagic":
       return { ...state, magicRequest: null, characterState: "idle" };
     case "setArtyProfile":
@@ -407,12 +453,57 @@ function reducer(state: State, action: Action): State {
 export const StoreContext = createContext<{ state: State; dispatch: Dispatch<Action> } | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  // /demo opens the populated household; / opens the full journey from the
-  // cover. Read once, when the reducer initialises.
+  // /demo opens the populated fixture household; / opens the real journey
+  // from the cover. Read once, when the reducer initialises.
   const pathname = usePathname();
+  const isDemoRoute = pathname?.startsWith("/demo") ?? false;
   const [state, dispatch] = useReducer(reducer, undefined, () =>
-    pathname?.startsWith("/demo") ? demoState() : initialState(),
+    isDemoRoute ? demoState() : initialState(),
   );
+
+  // A real household comes back. Runs after mount (localStorage is
+  // client-only and the server-rendered tree must match), never on /demo.
+  useEffect(() => {
+    if (isDemoRoute) return;
+    const saved = loadSession();
+    if (saved) dispatch({ type: "hydrate", saved });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDemoRoute]);
+
+  // And is kept. Whole document per save; only once onboarding is complete,
+  // and never for the demo, whose fixtures must never reach storage.
+  useEffect(() => {
+    if (isDemoRoute || state.isDemo || state.step !== null) return;
+    saveSession({
+      ownerName: state.ownerName,
+      members: state.snapshot.household.members.map((member) => ({
+        id: member.id,
+        name: member.name,
+        role: member.role,
+        descriptor: member.descriptor,
+        colorToken: member.colorToken,
+      })),
+      facts: state.extractedFacts,
+      items: state.snapshot.items,
+      memories: state.snapshot.memories,
+      reminderCount: state.reminderCount,
+      artyProfile: state.artyProfile,
+      notificationAppetite: state.notificationAppetite,
+    });
+  }, [
+    isDemoRoute,
+    state.isDemo,
+    state.step,
+    state.ownerName,
+    state.snapshot.household.members,
+    state.extractedFacts,
+    state.snapshot.items,
+    state.snapshot.memories,
+    state.reminderCount,
+    state.artyProfile,
+    state.notificationAppetite,
+  ]);
+
   const value = useMemo(() => ({ state, dispatch }), [state]);
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
