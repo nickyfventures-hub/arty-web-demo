@@ -107,13 +107,7 @@ function BottomNav() {
           onClick={() => dispatch({ type: "setTab", tab: "calendar" })}
         />
 
-        <button
-          onClick={() => dispatch({ type: "setOverlay", overlay: "arty" })}
-          aria-label="Arty. Ask or tell Arty anything."
-          className="-mt-4 flex h-[66px] w-[66px] items-center justify-center rounded-full bg-accent shadow-[0_8px_20px_rgba(31,111,107,0.32)] transition active:scale-95"
-        >
-          <ArtyCharacter state={state.characterState} size={58} />
-        </button>
+        <ArtyNavButton />
 
         <TabButton
           label="Plan"
@@ -123,6 +117,66 @@ function BottomNav() {
         />
       </div>
     </nav>
+  );
+}
+
+/**
+ * The centre of the product. A tap opens the conversation; press and hold is
+ * push-to-talk — Arty starts listening the moment the hold registers, and
+ * what you said is sent the moment you let go. The character reacting on the
+ * press, before a word is recognised, is the same rule the microphone
+ * follows everywhere else.
+ */
+function ArtyNavButton() {
+  const { state, dispatch } = useStore();
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const held = useRef(false);
+
+  const HOLD_MS = 350;
+
+  const release = useCallback(() => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+    if (held.current) {
+      held.current = false;
+      dispatch({ type: "setPTT", active: false });
+    }
+    window.removeEventListener("pointerup", release);
+    window.removeEventListener("pointercancel", release);
+  }, [dispatch]);
+
+  const press = () => {
+    held.current = false;
+    holdTimer.current = setTimeout(() => {
+      held.current = true;
+      // Open the conversation already listening. The release, wherever the
+      // finger ends up, stops the microphone and sends.
+      dispatch({ type: "setOverlay", overlay: "arty" });
+      dispatch({ type: "setPTT", active: true });
+    }, HOLD_MS);
+    window.addEventListener("pointerup", release);
+    window.addEventListener("pointercancel", release);
+  };
+
+  useEffect(() => () => release(), [release]);
+
+  return (
+    <button
+      onPointerDown={press}
+      onClick={() => {
+        // A hold already opened the conversation; don't reopen on the
+        // trailing click.
+        if (!held.current) dispatch({ type: "setOverlay", overlay: "arty" });
+      }}
+      onContextMenu={(event) => event.preventDefault()}
+      aria-label="Arty. Tap to ask, or hold to talk."
+      className="-mt-4 flex h-[66px] w-[66px] touch-none select-none items-center justify-center rounded-full bg-accent shadow-[0_8px_20px_rgba(31,111,107,0.32)] transition active:scale-95"
+      style={{ WebkitTouchCallout: "none", WebkitUserSelect: "none" }}
+    >
+      <ArtyCharacter state={state.characterState} size={58} />
+    </button>
   );
 }
 
@@ -543,6 +597,21 @@ function AssistantScreen() {
   // A real microphone where the browser allows one, and the scripted example
   // behind it where it does not. Either way the ears move on the tap.
   const speech = useVoice(submit);
+
+  // Push-to-talk from the centre button. The flag rising starts the ears;
+  // the flag falling stops them, and stopping is what sends what was heard.
+  const pttStarted = useRef(false);
+  useEffect(() => {
+    if (state.ptt && !speech.listening && !pttStarted.current) {
+      pttStarted.current = true;
+      speech.start("Add milk, nappies and dishwasher tablets");
+    }
+    if (!state.ptt && pttStarted.current) {
+      pttStarted.current = false;
+      if (speech.listening) speech.stop();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.ptt, speech.listening]);
 
   const listen = () => {
     if (speech.listening) {

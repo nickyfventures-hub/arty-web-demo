@@ -78,6 +78,12 @@ export interface State {
    */
   magicRequest: string | null;
   /**
+   * True while the centre button is held down: push-to-talk. The assistant
+   * starts listening the moment this rises and sends what it heard the
+   * moment it falls.
+   */
+  ptt: boolean;
+  /**
    * Which Arty this household chose, and its accent. Belongs to the
    * household, never to one adult: one home, one Arty. Changing it changes
    * appearance and nothing else.
@@ -117,6 +123,7 @@ export type Action =
   | { type: "setAIAvailable"; available: boolean }
   | { type: "setArtyProfile"; family: ArtyCharacterFamily; accent: ArtyAccent }
   | { type: "startMagic"; scenario: string }
+  | { type: "setPTT"; active: boolean }
   | { type: "endMagic" }
   | { type: "connectCalendar" }
   | { type: "connectEmail" }
@@ -161,6 +168,7 @@ export function initialState(now = new Date()): State {
     isEditingHousehold: false,
     aiAvailable: false,
     magicRequest: null,
+    ptt: false,
     artyProfile: defaultArtyProfile(now),
     calendarConnected: false,
     emailConnected: false,
@@ -308,6 +316,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, aiAvailable: action.available };
     case "startMagic":
       return { ...state, magicRequest: action.scenario, tab: "plan", overlay: "none" };
+    case "setPTT":
+      return { ...state, ptt: action.active };
     case "endMagic":
       return { ...state, magicRequest: null, characterState: "idle" };
     case "setArtyProfile":
@@ -340,7 +350,15 @@ function reducer(state: State, action: Action): State {
     case "setSegment":
       return { ...state, segment: action.segment };
     case "setOverlay":
-      return { ...state, overlay: action.overlay, artyPrefill: action.prefill ?? "" };
+      return {
+        ...state,
+        overlay: action.overlay,
+        artyPrefill: action.prefill ?? "",
+        // A conversation is a session: opening Arty starts a fresh
+        // transcript. What earlier conversations DID — items added,
+        // reminders set — persists; only the chat display resets.
+        transcript: action.overlay === "arty" ? [] : state.transcript,
+      };
     case "addTurn":
       return { ...state, transcript: [...state.transcript, action.turn] };
     case "clearTranscript":
