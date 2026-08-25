@@ -774,7 +774,7 @@ export function DemoDevPanel() {
 
   if (params.get("dev") !== "true" || params.get("recording") === "true") return null;
 
-  const families = ["companion", "concierge", "visitor", "essence"] as const;
+  const families = ["otter", "companion", "concierge", "visitor", "essence"] as const;
 
   return (
     <div className="absolute bottom-24 left-3 z-40">

@@ -40,13 +40,15 @@ export type AnalyticsEvent =
   | "arty_voice_started"
   | "arty_text_started";
 
+import type { ArtyCharacterFamily } from "./character";
+
 export interface AnalyticsProperties {
   moment_id?: string;
   action_id?: string;
   /** Which magic moment immediately preceded a waitlist signup. */
   preceding_moment?: string;
   recording?: boolean;
-  character_family?: "companion" | "concierge" | "visitor" | "essence";
+  character_family?: ArtyCharacterFamily;
   accent?: "navy" | "forest" | "terracotta" | "plum" | "sand";
   onboarding_stage?: string;
 }

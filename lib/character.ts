@@ -23,7 +23,7 @@ import type { CharacterState } from "./intent";
 
 // MARK: - Families
 
-export type ArtyCharacterFamily = "companion" | "concierge" | "visitor" | "essence";
+export type ArtyCharacterFamily = "otter" | "companion" | "concierge" | "visitor" | "essence";
 
 /**
  * The one registry. Every screen resolves name, description, voice and accent
@@ -45,6 +45,13 @@ export interface ArtyCharacterProfileConfig {
 }
 
 export const ARTY_CHARACTERS: Record<ArtyCharacterFamily, ArtyCharacterProfileConfig> = {
+  otter: {
+    id: "otter",
+    name: "Otter",
+    description: "Playful, quick and quietly on top of things.",
+    voiceId: "ARTY_VOICE_OTTER",
+    accentPair: { primary: "#8B6748", secondary: "#66D6A3" },
+  },
   companion: {
     id: "companion",
     name: "Companion",
@@ -85,6 +92,7 @@ export function voiceIdFor(family: ArtyCharacterFamily): string {
 }
 
 export const FAMILY_ORDER: ArtyCharacterFamily[] = [
+  "otter",
   "companion",
   "concierge",
   "visitor",
@@ -123,7 +131,9 @@ export interface HouseholdArtyProfile {
 }
 
 export function defaultArtyProfile(now = new Date()): HouseholdArtyProfile {
-  return { family: "companion", accent: "plum", createdAt: now.toISOString(), updatedAt: now.toISOString() };
+  // The otter is the mascot: the default Arty for a new household. Saved
+  // households keep whatever they chose.
+  return { family: "otter", accent: "plum", createdAt: now.toISOString(), updatedAt: now.toISOString() };
 }
 
 // MARK: - Shared material language

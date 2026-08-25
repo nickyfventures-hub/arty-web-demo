@@ -30,6 +30,7 @@ import {
 import { StoreContext } from "@/lib/store";
 import { CharacterShell, useBlink } from "./characters/shared";
 import Companion from "./characters/Companion";
+import Otter from "./characters/Otter";
 import Concierge from "./characters/Concierge";
 import Visitor from "./characters/Visitor";
 import Essence from "./characters/Essence";
@@ -50,6 +51,7 @@ const FAMILIES: Record<
   ArtyCharacterFamily,
   React.ComponentType<{ posture: ReturnType<typeof withLevel>; blinking: boolean; accent: string }>
 > = {
+  otter: Otter,
   companion: Companion,
   concierge: Concierge,
   visitor: Visitor,

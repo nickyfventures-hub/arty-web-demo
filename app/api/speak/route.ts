@@ -25,6 +25,7 @@ const DEFAULT_VOICE = "JBFqnCBsd6RMkjVDRZzb";
  * variables fall through to the household default, then the stock voice.
  */
 const CHARACTER_VOICES: Record<string, string | undefined> = {
+  ARTY_VOICE_OTTER: process.env.ELEVENLABS_VOICE_OTTER,
   ARTY_VOICE_COMPANION: process.env.ELEVENLABS_VOICE_COMPANION,
   ARTY_VOICE_CONCIERGE: process.env.ELEVENLABS_VOICE_CONCIERGE,
   ARTY_VOICE_VISITOR: process.env.ELEVENLABS_VOICE_VISITOR,

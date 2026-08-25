@@ -76,13 +76,13 @@ describe("the character registry", () => {
 });
 
 describe("the household profile", () => {
-  test("there are exactly four families in V0", () => {
-    assert.deepEqual(FAMILY_ORDER, ["companion", "concierge", "visitor", "essence"]);
+  test("five families, the otter leading", () => {
+    assert.deepEqual(FAMILY_ORDER, ["otter", "companion", "concierge", "visitor", "essence"]);
   });
 
-  test("the default Arty is the companion", () => {
+  test("the mascot is the default: a new household meets the otter", () => {
     const profile = defaultArtyProfile(new Date(2026, 7, 23));
-    assert.equal(profile.family, "companion");
+    assert.equal(profile.family, "otter");
     assert.equal(profile.accent, "plum");
   });
 

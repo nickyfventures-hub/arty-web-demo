@@ -113,6 +113,11 @@
     "support": "Every household's Arty can be a little different. Pick the one that feels like yours.",
     "options": [
       {
+        "id": "otter",
+        "label": "Otter",
+        "subtext": "Playful, quick and quietly on top of things."
+      },
+      {
         "id": "companion",
         "label": "Companion",
         "subtext": "Warm, loyal and always keeping an eye on things."
