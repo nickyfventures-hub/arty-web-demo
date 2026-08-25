@@ -158,3 +158,35 @@ export async function canonicaliseUtterance(text: string): Promise<string | null
 export function memberColour(index: number): string {
   return COLOURS[index % COLOURS.length];
 }
+
+// MARK: - Open conversation
+
+/**
+ * A friendly, open reply in Arty's voice, for anything the deterministic
+ * engine did not recognise. Grounding and tone rules live server-side in the
+ * chat system prompt: never invent household facts, never guilt, no
+ * exclamation marks. Null when the model is unavailable — the caller keeps
+ * its honest "I didn't quite catch that" fallback.
+ */
+export async function chatReply(text: string): Promise<string | null> {
+  const data = await ask<{ chat: { reply: string } }>({ kind: "chat", text });
+  return data?.chat.reply ?? null;
+}
+
+export interface IdeasContext {
+  postcode?: string;
+  childAges?: number[];
+  dayContext?: string;
+}
+
+export async function findIdeasAI(
+  text: string,
+  context: IdeasContext,
+): Promise<{ intro: string; ideas: { title: string; why: string }[] } | null> {
+  const data = await ask<{ ideas: { intro: string; ideas: { title: string; why: string }[] } }>({
+    kind: "ideas",
+    text,
+    context,
+  });
+  return data?.ideas ?? null;
+}
