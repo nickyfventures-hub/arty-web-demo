@@ -25,7 +25,8 @@ import ArtyCharacter from "@/components/ArtyCharacter";
 import { CharacterPicker } from "./CharacterStep";
 import MagicShowcase, { DemoDevPanel } from "./MagicShowcase";
 import { track } from "@/lib/analytics";
-import { canonicaliseUtterance, isAIAvailable } from "@/lib/ai";
+import { canonicaliseUtterance, chatReply, findIdeasAI, isAIAvailable } from "@/lib/ai";
+import { fallbackIdeas, formatIdeas, isIdeasQuery } from "@/lib/ideas";
 import { useSpeak } from "@/lib/voiceOut";
 import { voiceIdFor } from "@/lib/character";
 import { clearSession } from "@/lib/session";
@@ -592,6 +593,37 @@ function AssistantScreen() {
       setFollowUp(undefined);
 
       const timer = setTimeout(async () => {
+        // "Find something to do" gets its own path: suggestions, not effects.
+        // Grounded in postcode and ages when the model is available; a calm
+        // generic fallback when it is not. Arty proposes, never books.
+        if (!resolving && isIdeasQuery(trimmed)) {
+          const ages = state.snapshot.household.members
+            .map((member) => member.ageYears)
+            .filter((age): age is number => typeof age === "number");
+          const ideas =
+            (state.aiAvailable
+              ? await findIdeasAI(trimmed, {
+                  postcode: state.postcode || undefined,
+                  childAges: ages.length > 0 ? ages : undefined,
+                }).catch(() => null)
+              : null) ?? fallbackIdeas();
+          dispatch({
+            type: "addTurn",
+            turn: {
+              id: `a-${Date.now()}`,
+              speaker: "arty",
+              text: formatIdeas(ideas),
+              confirmations: [],
+            },
+          });
+          dispatch({ type: "setCharacter", state: "pleased" });
+          void voice.speak(ideas.intro, voiceIdFor(state.artyProfile.family));
+          timers.current.push(
+            setTimeout(() => dispatch({ type: "setCharacter", state: "idle" }), 2400),
+          );
+          return;
+        }
+
         // When the brain is configured, let Claude decide what was MEANT;
         // the deterministic engine still owns what happens next, so effects
         // and permissions stay on one code path whichever brain answered.
@@ -601,6 +633,17 @@ function AssistantScreen() {
           if (canonical) understood = canonical;
         }
         const reply = respond(understood, state.snapshot, { now: state.now, resolving });
+
+        // Nothing recognised, but a brain is available: answer as open,
+        // friendly conversation instead of a shrug. Chat never mutates the
+        // household — no effects ride this path, by construction.
+        if (reply.message === copy.assistant.unknown && state.aiAvailable && !resolving) {
+          const chatted = await chatReply(trimmed).catch(() => null);
+          if (chatted) {
+            reply.message = chatted;
+            reply.characterState = "speaking";
+          }
+        }
 
         for (const effect of reply.effects) {
           if (effect.kind === "addItems" && effect.items) {
