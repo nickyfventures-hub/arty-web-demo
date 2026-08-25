@@ -10,7 +10,9 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Arty",
     short_name: "Arty",
     description: "Your family's personal assistant. In your pocket.",
-    start_url: "/demo",
+    // The installed app is YOUR household: onboarding first time, your own
+    // data after that. The fixture demo stays at /demo for sharing.
+    start_url: "/",
     display: "standalone",
     background_color: "#FBF8F4",
     theme_color: "#FBF8F4",
