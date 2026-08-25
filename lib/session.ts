@@ -31,6 +31,8 @@ export interface SavedMember {
 export interface SavedHousehold {
   version: number;
   ownerName: string;
+  /** Home, told once. Optional so older saves hydrate cleanly. */
+  postcode?: string;
   members: SavedMember[];
   /** What Arty was told about people, keyed by name — the onboarding facts. */
   facts: { name: string; lines: string[] }[];

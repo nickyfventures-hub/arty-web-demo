@@ -34,6 +34,7 @@ export type OnboardingStep =
   | "capabilities"
   | "intro"
   | "household"
+  | "postcode"
   | "connect"
   | "magic"
   | "character"
@@ -67,6 +68,8 @@ export interface State {
   ownerName: string;
   extractedMembers: { id: string; name: string; role: "owner" | "adult" | "child" }[];
   extractedFacts: { name: string; lines: string[] }[];
+  /** Home, as one postcode, told once. Powers local context later. */
+  postcode: string;
   /** Where the "who do you live with" conversation has got to. */
   householdStage: HouseholdStage;
   /** True while the summary is open for correction. */
@@ -116,6 +119,7 @@ export type Action =
   | { type: "finishOnboarding" }
   | { type: "restart" }
   | { type: "setName"; name: string }
+  | { type: "setPostcode"; postcode: string }
   | { type: "setExtraction"; members: State["extractedMembers"]; facts: State["extractedFacts"] }
   | { type: "goBack" }
   | { type: "setHouseholdStage"; stage: HouseholdStage }
@@ -152,6 +156,7 @@ export const STEP_ORDER: OnboardingStep[] = [
   "capabilities",
   "intro",
   "household",
+  "postcode",
   "connect",
   "magic",
   "character",
@@ -166,6 +171,7 @@ export function initialState(now = new Date()): State {
     step: "welcome",
     isDemo: false,
     ownerName: "",
+    postcode: "",
     extractedMembers: [],
     extractedFacts: [],
     householdStage: "who",
@@ -217,6 +223,7 @@ export function demoState(now = new Date()): State {
     step: null,
     isDemo: true,
     ownerName: owner?.name ?? "Nicky",
+    postcode: "WA7 4XX",
     extractedMembers: members.map((member) => ({
       id: member.id,
       name: member.name,
@@ -270,6 +277,8 @@ function reducer(state: State, action: Action): State {
       return state.isDemo ? demoState(state.now) : initialState(state.now);
     case "setName":
       return { ...state, ownerName: action.name };
+    case "setPostcode":
+      return { ...state, postcode: action.postcode.trim().toUpperCase() };
     case "setExtraction":
       return { ...state, extractedMembers: action.members, extractedFacts: action.facts };
 
@@ -352,6 +361,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         step: null,
         ownerName: saved.ownerName,
+        postcode: saved.postcode ?? "",
         extractedMembers: saved.members.map(({ id, name, role }) => ({ id, name, role })),
         extractedFacts: saved.facts,
         artyProfile: saved.artyProfile,
@@ -476,6 +486,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (isDemoRoute || state.isDemo || state.step !== null) return;
     saveSession({
       ownerName: state.ownerName,
+      postcode: state.postcode,
       members: state.snapshot.household.members.map((member) => ({
         id: member.id,
         name: member.name,
@@ -495,6 +506,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     state.isDemo,
     state.step,
     state.ownerName,
+    state.postcode,
     state.snapshot.household.members,
     state.extractedFacts,
     state.snapshot.items,

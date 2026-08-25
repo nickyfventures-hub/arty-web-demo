@@ -23,10 +23,12 @@ import {
 } from "@/components/ui";
 import { copy, fill } from "@/lib/fixtures";
 import { isAIAvailable } from "@/lib/ai";
+import { track } from "@/lib/analytics";
 import { STEP_ORDER, useStore } from "@/lib/store";
 import { useVoice } from "@/lib/useVoice";
 import Capabilities from "./CapabilitiesStep";
 import CharacterStep from "./CharacterStep";
+import PostcodeStep from "./PostcodeStep";
 import MontageStep from "./MontageStep";
 import HouseholdConversation from "./HouseholdStep";
 
@@ -72,6 +74,7 @@ export default function Onboarding() {
           {state.step === "capabilities" && <Capabilities onNext={advance} />}
           {state.step === "intro" && <Introduction onNext={advance} />}
           {state.step === "household" && <HouseholdConversation onNext={advance} />}
+          {state.step === "postcode" && <PostcodeStep onNext={advance} />}
           {state.step === "connect" && <Connect onNext={advance} />}
           {state.step === "magic" && <MagicMoment onNext={advance} />}
           {state.step === "character" && <CharacterStep onNext={advance} />}
@@ -282,7 +285,10 @@ function Connect({ onNext }: { onNext: () => void }) {
           action={copy.connect.calendarAction}
           connected={state.calendarConnected}
           connectedLabel={copy.connect.calendarConnected}
-          onConnect={() => dispatch({ type: "connectCalendar" })}
+          onConnect={() => {
+            track("onboarding_calendar_connected", {});
+            dispatch({ type: "connectCalendar" });
+          }}
           note={
             state.calendarConnected
               ? "In the iPhone app this is a real calendar connection."
@@ -298,7 +304,10 @@ function Connect({ onNext }: { onNext: () => void }) {
           action={copy.connect.emailAction}
           connected={state.emailConnected}
           connectedLabel={copy.connect.emailDemoConnected}
-          onConnect={() => dispatch({ type: "connectEmail" })}
+          onConnect={() => {
+            track("onboarding_email_connected", {});
+            dispatch({ type: "connectEmail" });
+          }}
           note={state.emailConnected ? copy.connect.emailHonesty : undefined}
           delay={0.12}
         />
@@ -377,6 +386,7 @@ function MagicMoment({ onNext }: { onNext: () => void }) {
   const insights = state.snapshot.insights;
 
   useEffect(() => {
+    track("onboarding_magic_moment_viewed", {});
     dispatch({ type: "setCharacter", state: "thinking" });
     const timers: ReturnType<typeof setTimeout>[] = [];
 
@@ -417,12 +427,37 @@ function MagicMoment({ onNext }: { onNext: () => void }) {
             {turned
               ? insights.length > 0
                 ? copy.magic.turn
-                : copy.magic.emptyProduction
+                : copy.magic.knowledgeTitle
               : copy.magic.waiting}
           </p>
         </div>
 
-        {turned ? (
+        {turned && insights.length === 0 && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              {state.extractedMembers.map((member) => {
+                const lines = state.extractedFacts.find((fact) => fact.name === member.name)?.lines;
+                return (
+                  <Reveal key={member.id} className="flex items-baseline justify-between rounded-2xl bg-violet-tint px-4 py-3">
+                    <span className="text-[15px] font-semibold text-ink">{member.name}</span>
+                    <span className="text-right text-[13px] text-ink-secondary">
+                      {lines?.join(" · ") ?? (member.role === "child" ? "Child" : "Adult")}
+                    </span>
+                  </Reveal>
+                );
+              })}
+              {state.postcode && (
+                <Reveal className="flex items-baseline justify-between rounded-2xl bg-violet-tint px-4 py-3">
+                  <span className="text-[15px] font-semibold text-ink">Home</span>
+                  <span className="text-[13px] text-ink-secondary">{state.postcode}</span>
+                </Reveal>
+              )}
+            </div>
+            <p className="text-[15px] leading-relaxed text-ink-secondary">{copy.magic.emptyReal}</p>
+          </div>
+        )}
+
+        {turned && insights.length > 0 ? (
           <div className="space-y-6">
             {insights.slice(0, revealed).map((insight) => {
               const accepted = state.acceptedInsightIds.includes(insight.id);

@@ -68,6 +68,14 @@
     "confirm": "Looks right",
     "edit": "Edit"
   },
+  "postcode": {
+    "lead": "Where's home?",
+    "support": "Tell me once. I'll use it for things like local plans, weather, travel and household services.",
+    "placeholder": "Your postcode",
+    "action": "That's home",
+    "skip": "Skip for now",
+    "noted": "Got it. You won't need to tell me again."
+  },
   "connect": {
     "lead": "You shouldn't have to tell me everything.",
     "support": "Let me learn from the places your household life already happens.",
@@ -96,7 +104,9 @@
     ],
     "turn": "Right. I've already found a few things.",
     "emptyProduction": "I haven't found anything yet. Once there's something in your calendar I'll start joining the dots.",
-    "continue": "Continue"
+    "continue": "Continue",
+    "knowledgeTitle": "Here's what I've got so far",
+    "emptyReal": "Nothing urgent needs you today. Tell me things as they come up and I'll start joining the dots."
   },
   "character": {
     "lead": "One last thing. What should your Arty look like?",
@@ -226,7 +236,8 @@
     "tomorrowRelaxed": "Tomorrow looks pretty relaxed.",
     "tomorrowBusy": "Tomorrow has a bit in it.",
     "free": "Free",
-    "looksFree": "Looks free"
+    "looksFree": "Looks free",
+    "nothingNeedsYou": "Nothing needs you today."
   },
   "assistant": {
     "prompt": "What can I help with?",

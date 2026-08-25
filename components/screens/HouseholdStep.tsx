@@ -260,7 +260,7 @@ function Summary({
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-[22px] font-semibold text-ink">{copy.household.summaryTitle}</h2>
         {usedAI && (
-          <span className="flex shrink-0 items-center gap-1 text-[12px] font-medium text-accent">
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-violet-tint px-2 py-0.5 text-[12px] font-medium text-violet-deep">
             <Sparkles size={12} /> Understood by AI
           </span>
         )}

@@ -25,6 +25,65 @@ import type { CharacterState } from "./intent";
 
 export type ArtyCharacterFamily = "companion" | "concierge" | "visitor" | "essence";
 
+/**
+ * The one registry. Every screen resolves name, description, voice and accent
+ * pairing from here via the household's characterId — never from scattered
+ * per-component tables, and never `if (family === "companion")` in a view.
+ *
+ * voiceId is a LOGICAL id. The server maps it to a real provider voice via
+ * environment configuration (ELEVENLABS_VOICE_COMPANION and friends), so a
+ * real voice can be assigned per character later without touching any UI
+ * logic — and no provider id or key ever appears in this bundle.
+ */
+export interface ArtyCharacterProfileConfig {
+  id: ArtyCharacterFamily;
+  name: string;
+  description: string;
+  voiceId: string;
+  /** The character's own accent pairing (§brand); user accent still applies. */
+  accentPair: { primary: string; secondary: string };
+}
+
+export const ARTY_CHARACTERS: Record<ArtyCharacterFamily, ArtyCharacterProfileConfig> = {
+  companion: {
+    id: "companion",
+    name: "Companion",
+    description: "Warm, loyal and always keeping an eye on things.",
+    voiceId: "ARTY_VOICE_COMPANION",
+    accentPair: { primary: "#C89A6B", secondary: "#4E7BFF" },
+  },
+  concierge: {
+    id: "concierge",
+    name: "Concierge",
+    description: "Calm, capable and quietly organised.",
+    voiceId: "ARTY_VOICE_CONCIERGE",
+    accentPair: { primary: "#182230", secondary: "#FF766D" },
+  },
+  visitor: {
+    id: "visitor",
+    name: "Visitor",
+    description: "Curious, clever and always paying attention.",
+    voiceId: "ARTY_VOICE_VISITOR",
+    accentPair: { primary: "#66D6A3", secondary: "#A98BFF" },
+  },
+  essence: {
+    id: "essence",
+    name: "Essence",
+    description: "Simple, quiet and always there when you need it.",
+    voiceId: "ARTY_VOICE_ESSENCE",
+    accentPair: { primary: "#4E7BFF", secondary: "#FFD84D" },
+  },
+};
+
+export function characterProfile(family: ArtyCharacterFamily): ArtyCharacterProfileConfig {
+  return ARTY_CHARACTERS[family];
+}
+
+/** The canonical resolution: characterId -> voiceId. Nothing else decides. */
+export function voiceIdFor(family: ArtyCharacterFamily): string {
+  return ARTY_CHARACTERS[family].voiceId;
+}
+
 export const FAMILY_ORDER: ArtyCharacterFamily[] = [
   "companion",
   "concierge",

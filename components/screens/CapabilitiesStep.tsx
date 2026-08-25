@@ -23,6 +23,15 @@ import { copy } from "@/lib/fixtures";
 import { useStore } from "@/lib/store";
 
 /** Keyed by the id in copy.json, so the words and the icons cannot drift apart. */
+/** One hue per promise: blue action, violet memory, sun admin, coral family. */
+const ICON_HUES: Record<string, string> = {
+  plan: "bg-accent-muted text-accent",
+  remember: "bg-violet-tint text-violet-deep",
+  admin: "bg-sun-tint text-ink",
+  ask: "bg-accent-muted text-accent",
+  everyone: "bg-coral-tint text-coral-deep",
+};
+
 const ICONS: Record<string, React.ReactNode> = {
   plan: <CalendarDays size={19} />,
   remember: <Bookmark size={19} />,
@@ -52,7 +61,7 @@ export default function Capabilities({ onNext }: { onNext: () => void }) {
               <li className="flex gap-3.5">
                 <span
                   aria-hidden="true"
-                  className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-muted text-accent"
+                  className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${ICON_HUES[item.id] ?? "bg-accent-muted text-accent"}`}
                 >
                   {ICONS[item.id]}
                 </span>

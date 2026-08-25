@@ -33,6 +33,7 @@ function fakeStorage(seed: Record<string, string> = {}): SessionStorage & { data
 
 const HOUSEHOLD = {
   ownerName: "Nicky",
+  postcode: "WA7 4XX",
   members: [
     { id: "nicky", name: "Nicky", role: "owner" as const, descriptor: "Adult", colorToken: "artyTeal" },
     { id: "sunny", name: "Sunny", role: "child" as const, descriptor: "Age 2", colorToken: "artyAmber" },
@@ -59,11 +60,21 @@ describe("a real household survives a restart", () => {
     assert.ok(revived);
     assert.equal(revived!.version, SESSION_VERSION);
     assert.equal(revived!.ownerName, "Nicky");
+    assert.equal(revived!.postcode, "WA7 4XX", "home is told once and kept");
     assert.equal(revived!.members.length, 2);
     assert.equal(revived!.members[1].descriptor, "Age 2");
     assert.equal(revived!.items[0].text, "Nappies");
     assert.deepEqual(revived!.memories, ["Katie likes peonies"]);
     assert.equal(revived!.artyProfile.family, "companion");
+  });
+
+  test("a save from before postcodes hydrates cleanly", () => {
+    const storage = fakeStorage();
+    const { postcode: _omitted, ...older } = HOUSEHOLD;
+    saveSession(older, storage);
+    const revived = loadSession(storage);
+    assert.ok(revived);
+    assert.equal(revived!.postcode, undefined);
   });
 
   test("no storage, corrupt data and future versions all fail safe", () => {

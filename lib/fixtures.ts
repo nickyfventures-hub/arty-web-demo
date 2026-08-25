@@ -311,17 +311,20 @@ export function memberById(snapshot: Snapshot, id?: string): Member | undefined 
 }
 
 export function memberColour(token: string): string {
+  // Token names are stored data and never change; the hues resolve here, so
+  // the bright palette needed no migration. Each carries white initials at
+  // >= 3:1 (chips are graphics, verified by check-contrast).
   switch (token) {
     case "artyTeal":
-      return "#1F6F6B";
+      return "#4064D0";
     case "artyPlum":
-      return "#7A4A63";
+      return "#A94E48";
     case "artyAmber":
-      return "#A9752B";
+      return "#8A6420";
     case "artySage":
-      return "#5C7350";
+      return "#39785C";
     default:
-      return "#6B6B70";
+      return "#5A6273";
   }
 }
 

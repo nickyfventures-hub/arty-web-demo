@@ -28,7 +28,17 @@ export type AnalyticsEvent =
   | "magic_moment_interacted"
   | "waitlist_viewed"
   | "waitlist_started"
-  | "waitlist_completed";
+  | "waitlist_completed"
+  | "voice_preview_started"
+  | "onboarding_tell_once_completed"
+  | "onboarding_multi_intent_completed"
+  | "onboarding_postcode_completed"
+  | "onboarding_calendar_connected"
+  | "onboarding_email_connected"
+  | "onboarding_magic_moment_viewed"
+  | "plan_viewed"
+  | "arty_voice_started"
+  | "arty_text_started";
 
 export interface AnalyticsProperties {
   moment_id?: string;

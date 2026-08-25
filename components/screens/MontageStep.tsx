@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import ArtyCharacter from "@/components/ArtyCharacter";
 import { PrimaryButton, Reveal } from "@/components/ui";
 import { copy } from "@/lib/fixtures";
+import { track } from "@/lib/analytics";
 import { useStore } from "@/lib/store";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -58,6 +59,9 @@ export default function MontageStep({ onNext }: { onNext: () => void }) {
     timers.push(
       setTimeout(() => {
         setStage(lines.length);
+        // The montage IS the tell-once and multi-intent demonstration.
+        track("onboarding_tell_once_completed", {});
+        track("onboarding_multi_intent_completed", {});
         dispatch({ type: "setCharacter", state: "pleased" });
       }, 400 + lines.length * stepTime + 300),
     );

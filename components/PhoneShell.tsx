@@ -17,7 +17,7 @@ import type { ReactNode } from "react";
 
 export default function PhoneShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-dvh w-full justify-center bg-[#E7E1D8] sm:items-center sm:py-10">
+    <div className="flex min-h-dvh w-full justify-center bg-[#F2EEE3] sm:items-center sm:py-10">
       {/* The device. Everything sm: only — on a real phone there is no frame. */}
       <div
         className="

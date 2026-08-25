@@ -14,8 +14,8 @@ export default function manifest(): MetadataRoute.Manifest {
     // data after that. The fixture demo stays at /demo for sharing.
     start_url: "/",
     display: "standalone",
-    background_color: "#FBF8F4",
-    theme_color: "#FBF8F4",
+    background_color: "#FFFDF8",
+    theme_color: "#FFFDF8",
     icons: [
       { src: "/icon.png", sizes: "1024x1024", type: "image/png" },
       { src: "/icon.png", sizes: "512x512", type: "image/png" },

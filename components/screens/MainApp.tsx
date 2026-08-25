@@ -27,6 +27,7 @@ import MagicShowcase, { DemoDevPanel } from "./MagicShowcase";
 import { track } from "@/lib/analytics";
 import { canonicaliseUtterance, isAIAvailable } from "@/lib/ai";
 import { useSpeak } from "@/lib/voiceOut";
+import { voiceIdFor } from "@/lib/character";
 import { clearSession } from "@/lib/session";
 import {
   ArtySays,
@@ -234,6 +235,7 @@ function Sheet({ children, full }: { children: React.ReactNode; full?: boolean }
 
 function PlanScreen() {
   const { state, dispatch } = useStore();
+  useEffect(() => track("plan_viewed", {}), []);
   const offset = state.segment === "tomorrow" ? 1 : 0;
   const day = useMemo(
     () => buildDay(state.snapshot, offset, state.now),
@@ -249,7 +251,9 @@ function PlanScreen() {
           <h1 className="text-[22px] font-semibold text-ink">
             {greeting(state.ownerName || "there", state.now)}
           </h1>
-          <p className="text-[15px] text-ink-secondary">{statusLine(day)}</p>
+          <p className="text-[15px] text-ink-secondary">
+            {!state.isDemo && day.items.length === 0 ? copy.plan.nothingNeedsYou : statusLine(day)}
+          </p>
           {/* Nobody should be able to mistake the Faircloughs for their own
               family, or a simulated calendar for a connected one. */}
           {state.isDemo && (
@@ -342,9 +346,44 @@ function PlanScreen() {
         )}
       </div>
 
+      {!state.isDemo && state.segment === "today" && state.extractedMembers.length > 0 && day.items.length === 0 && (
+        <div className="mt-8">
+          <span className="inline-flex items-center rounded-full bg-violet-tint px-2.5 py-1 text-[12px] font-semibold uppercase tracking-wide text-violet-deep">
+            What Arty knows
+          </span>
+          <div className="mt-2 divide-y divide-hairline">
+            {state.extractedMembers.map((member) => {
+              const lines = state.extractedFacts.find((fact) => fact.name === member.name)?.lines;
+              return (
+                <div key={member.id} className="flex min-h-[44px] items-center gap-3">
+                  <span className="flex-1 text-[15px] text-ink">{member.name}</span>
+                  <span className="text-right text-[13px] text-ink-secondary">
+                    {lines?.join(" · ") ?? (member.role === "child" ? "Child" : "Adult")}
+                  </span>
+                </div>
+              );
+            })}
+            {state.postcode && (
+              <div className="flex min-h-[44px] items-center gap-3">
+                <span className="flex-1 text-[15px] text-ink">Home</span>
+                <span className="text-[13px] text-ink-secondary">{state.postcode}</span>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => dispatch({ type: "setOverlay", overlay: "arty" })}
+            className="mt-3 inline-flex min-h-[36px] items-center rounded-full bg-accent-muted px-3.5 text-[14px] font-medium text-accent transition active:scale-95"
+          >
+            Tell Arty something
+          </button>
+        </div>
+      )}
+
       {state.segment !== "week" && day.watchlist.length > 0 && (
         <div className="mt-8">
-          <SectionHeader>{copy.plan.watchingTitle}</SectionHeader>
+          <span className="inline-flex items-center rounded-full bg-sun-tint px-2.5 py-1 text-[12px] font-semibold uppercase tracking-wide text-ink">
+            {copy.plan.watchingTitle}
+          </span>
           <div className="mt-2 divide-y divide-hairline">
             {day.watchlist.map((entry) => (
               <button
@@ -584,7 +623,7 @@ function AssistantScreen() {
         });
         dispatch({ type: "setCharacter", state: reply.characterState });
         setFollowUp(reply.followUp);
-        void voice.speak(reply.message);
+        void voice.speak(reply.message, voiceIdFor(state.artyProfile.family));
 
         timers.current.push(
           setTimeout(() => dispatch({ type: "setCharacter", state: "idle" }), 2400),
@@ -592,7 +631,7 @@ function AssistantScreen() {
       }, 620);
       timers.current.push(timer);
     },
-    [dispatch, state.now, state.snapshot, state.aiAvailable, voice],
+    [dispatch, state.now, state.snapshot, state.aiAvailable, voice, state.artyProfile.family],
   );
 
   // A real microphone where the browser allows one, and the scripted example
@@ -620,6 +659,7 @@ function AssistantScreen() {
       dispatch({ type: "setCharacter", state: "idle" });
       return;
     }
+    track("arty_voice_started", {});
     speech.start("Add milk, nappies and dishwasher tablets");
   };
 
@@ -708,6 +748,7 @@ function AssistantScreen() {
           value={input}
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={(event) => event.key === "Enter" && submit(input)}
+          onFocus={() => track("arty_text_started", {})}
           placeholder={copy.assistant.typePlaceholder}
           aria-label="Type a message to Arty"
           className="flex-1 rounded-full bg-muted px-4 py-3 text-[17px] outline-none"
@@ -925,6 +966,12 @@ function YourArtyPage() {
         <ArtyCharacter state="idle" size={170} />
         <p className="text-[17px] font-semibold text-ink">{current?.label}</p>
         <p className="max-w-[280px] text-center text-[15px] text-ink-secondary">{current?.subtext}</p>
+      </div>
+      <div className="rounded-2xl bg-muted px-4 py-3">
+        <p className="text-[15px] font-medium text-ink">Voice</p>
+        <p className="text-[13px] text-ink-secondary">
+          Matched to your Arty — {current?.label ?? "Companion"} has its own voice.
+        </p>
       </div>
       <SecondaryButton onClick={() => setPicking(true)}>{copy.character.settingsChange}</SecondaryButton>
       <p className="text-center text-[13px] text-ink-secondary">{copy.character.settingsNote}</p>

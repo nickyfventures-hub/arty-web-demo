@@ -18,6 +18,25 @@ const API = "https://api.elevenlabs.io/v1";
 /** A calm default; override with ELEVENLABS_VOICE_ID in Railway. */
 const DEFAULT_VOICE = "JBFqnCBsd6RMkjVDRZzb";
 
+/**
+ * Clients send a LOGICAL voice id — the character's, from the one registry.
+ * Only these are accepted; each maps to its own env variable so a real
+ * provider voice can be assigned per character without a code change. Unset
+ * variables fall through to the household default, then the stock voice.
+ */
+const CHARACTER_VOICES: Record<string, string | undefined> = {
+  ARTY_VOICE_COMPANION: process.env.ELEVENLABS_VOICE_COMPANION,
+  ARTY_VOICE_CONCIERGE: process.env.ELEVENLABS_VOICE_CONCIERGE,
+  ARTY_VOICE_VISITOR: process.env.ELEVENLABS_VOICE_VISITOR,
+  ARTY_VOICE_ESSENCE: process.env.ELEVENLABS_VOICE_ESSENCE,
+};
+
+function resolveVoice(logical: unknown): string {
+  const configured =
+    typeof logical === "string" ? CHARACTER_VOICES[logical]?.trim() : undefined;
+  return configured || process.env.ELEVENLABS_VOICE_ID?.trim() || DEFAULT_VOICE;
+}
+
 function key(): string | null {
   return process.env.ELEVENLABS_API_KEY?.trim() || null;
 }
@@ -33,8 +52,9 @@ export async function POST(request: NextRequest) {
   }
 
   let text: unknown;
+  let voice: unknown;
   try {
-    ({ text } = await request.json());
+    ({ text, voice } = await request.json());
   } catch {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
   }
@@ -42,10 +62,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "bad-request" }, { status: 400 });
   }
 
-  const voice = process.env.ELEVENLABS_VOICE_ID?.trim() || DEFAULT_VOICE;
+  const resolved = resolveVoice(voice);
 
   try {
-    const upstream = await fetch(`${API}/text-to-speech/${voice}?output_format=mp3_44100_64`, {
+    const upstream = await fetch(`${API}/text-to-speech/${resolved}?output_format=mp3_44100_64`, {
       method: "POST",
       headers: { "xi-api-key": apiKey, "Content-Type": "application/json" },
       body: JSON.stringify({

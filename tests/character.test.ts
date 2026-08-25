@@ -10,6 +10,8 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import {
   ACCENTS,
+  ARTY_CHARACTERS,
+  voiceIdFor,
   FAMILY_ORDER,
   LISTENING_RING,
   POSTURES,
@@ -48,6 +50,28 @@ describe("one state model for every family", () => {
 
   test("the listening ring timing is a single shared constant", () => {
     assert.equal(typeof LISTENING_RING.duration, "number");
+  });
+});
+
+describe("the character registry", () => {
+  test("one entry per family, ids matching keys", () => {
+    assert.deepEqual(Object.keys(ARTY_CHARACTERS).sort(), [...FAMILY_ORDER].sort());
+    for (const [key, profile] of Object.entries(ARTY_CHARACTERS)) {
+      assert.equal(profile.id, key);
+      assert.ok(profile.name.length > 0);
+      assert.ok(profile.description.length > 0);
+    }
+  });
+
+  test("every character resolves to its own logical voiceId, centrally", () => {
+    const ids = FAMILY_ORDER.map((family) => voiceIdFor(family));
+    assert.equal(new Set(ids).size, ids.length, "voice ids must be distinct per character");
+    for (const id of ids) {
+      // Logical ids only: a raw provider voice id in the bundle would mean
+      // voice configuration had leaked out of the server.
+      assert.match(id, /^ARTY_VOICE_[A-Z]+$/);
+    }
+    assert.equal(voiceIdFor("companion"), ARTY_CHARACTERS.companion.voiceId);
   });
 });
 

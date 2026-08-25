@@ -34,7 +34,7 @@ export interface VoiceOut {
   /** True while Arty's audio is actually playing. */
   speaking: boolean;
   /** Fetch and play one line. Resolves when playback ends or fails. */
-  speak: (text: string) => Promise<void>;
+  speak: (text: string, voiceId?: string) => Promise<void>;
   stop: () => void;
 }
 
@@ -81,13 +81,14 @@ export function useSpeak(): VoiceOut {
   }, []);
 
   const speak = useCallback(
-    async (text: string) => {
+    async (text: string, voiceId?: string) => {
       if (!(await speakAvailable())) return;
       try {
         const response = await fetch("/api/speak", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
+          // voiceId is the character's LOGICAL id; the server resolves it.
+          body: JSON.stringify({ text, voice: voiceId }),
         });
         if (!response.ok || !response.headers.get("Content-Type")?.includes("audio")) return;
 

@@ -18,7 +18,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import ArtyCharacter from "@/components/ArtyCharacter";
 import { ArtySays, PrimaryButton, Reveal, SecondaryButton } from "@/components/ui";
 import { track } from "@/lib/analytics";
-import { ACCENTS, FAMILY_ORDER, type ArtyAccent, type ArtyCharacterFamily } from "@/lib/character";
+import { ACCENTS, FAMILY_ORDER, voiceIdFor, type ArtyAccent, type ArtyCharacterFamily } from "@/lib/character";
+import { useSpeak } from "@/lib/voiceOut";
 import { copy } from "@/lib/fixtures";
 import type { CharacterState } from "@/lib/intent";
 import { useStore } from "@/lib/store";
@@ -74,8 +75,14 @@ export function CharacterPicker({
   };
 
   /** The real state machine, briefly: listening, then speaking, then pleased. */
+  const speak = useSpeak();
+
   const sayHello = () => {
     track("arty_character_previewed", { character_family: family, onboarding_stage: stage });
+    track("voice_preview_started", { character_family: family });
+    // The previewed character's own voice — the one thing that makes
+    // "choose your Arty" audible as well as visible.
+    void speak.speak(copy.character.helloLine, voiceIdFor(family));
     previewTimers.current.forEach(clearTimeout);
     setPreviewState("listening");
     previewTimers.current = [

@@ -46,6 +46,7 @@ import {
 import { useStore } from "@/lib/store";
 import { joinWaitlist, submitResearch } from "@/lib/waitlist";
 import { useSpeak } from "@/lib/voiceOut";
+import { voiceIdFor } from "@/lib/character";
 
 const EMBLEMS: Record<MagicMoment["emblem"], LucideIcon> = {
   gift: Gift,
@@ -189,7 +190,7 @@ export default function MagicShowcase() {
     }
 
     if (phase === "lines") {
-      if (lineCount === 1) void voice.speak(moment.lines[0]);
+      if (lineCount === 1) void voice.speak(moment.lines[0], voiceIdFor(state.artyProfile.family));
       if (lineCount < moment.lines.length) {
         later(lineCount === 0 ? 300 : moment.lineHoldMs ?? TIMING.lineMs, () =>
           setLineCount(lineCount + 1),
@@ -494,7 +495,7 @@ function MomentStage({
                   <span
                     className={`text-[16px] font-semibold tabular-nums ${
                       row.emphasis === "accent" || row.emphasis === "down"
-                        ? "text-accent"
+                        ? "text-leaf-deep"
                         : row.emphasis === "up"
                           ? "text-attention"
                           : "text-ink"
@@ -521,7 +522,7 @@ function MomentStage({
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="pt-2 text-[15px] font-medium text-accent"
+              className="pt-2 text-[15px] font-medium text-leaf-deep"
             >
               {moment.sheet.ctaResponse}
             </motion.p>
@@ -624,7 +625,7 @@ function Montage() {
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 + index * 0.55, duration: 0.3 }}
-            className="flex items-baseline justify-between rounded-2xl bg-muted px-4 py-3"
+            className="flex items-baseline justify-between rounded-2xl bg-violet-tint px-4 py-3"
           >
             <span className="text-[15px] font-semibold text-ink">{entry.subject}</span>
             <span className="text-right text-[13px] text-ink-secondary">{entry.fact}</span>
